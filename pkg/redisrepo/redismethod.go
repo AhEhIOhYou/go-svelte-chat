@@ -86,7 +86,7 @@ func CreateChat(c *model.Chat) (string, error) {
 	return chatKey, nil
 }
 
-func CreateChatBetweenIndex() {
+func CreateFetchChatBetweenIndex() {
 	res, err := redisClient.Do(context.Background(),
 		"FT.CREATE",
 		chatIndex(),
