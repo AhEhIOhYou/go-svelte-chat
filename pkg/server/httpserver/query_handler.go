@@ -6,8 +6,8 @@ import (
 	"os"
 	"time"
 
-	"project-eighteen/pkg/database"
 	"project-eighteen/pkg/constants"
+	"project-eighteen/pkg/database"
 	"project-eighteen/pkg/server/structs"
 	"project-eighteen/pkg/utils"
 
@@ -75,7 +75,7 @@ func IsUsernameAvaliableQH(username string) bool {
 func LoginQH(user structs.UserDetailsRequestPayloadType) (structs.UserDetailsResponsePayloadType, error) {
 	if user.Username == "" {
 		return structs.UserDetailsResponsePayloadType{}, errors.New(constants.UsernameCantBeEmpty)
-	} else if user.Passwrod == "" {
+	} else if user.Password == "" {
 		return structs.UserDetailsResponsePayloadType{}, errors.New(constants.PasswordCantBeEmpty)
 	} else {
 		userDetails := GetUserByUsername(user.Username)
@@ -84,7 +84,7 @@ func LoginQH(user structs.UserDetailsRequestPayloadType) (structs.UserDetailsRes
 			return structs.UserDetailsResponsePayloadType{}, errors.New(constants.AccountDoesNotExist)
 		}
 
-		if err := utils.VerifyPassword(userDetails.Password, user.Passwrod); err != nil {
+		if err := utils.VerifyPassword(userDetails.Password, user.Password); err != nil {
 			return structs.UserDetailsResponsePayloadType{}, errors.New(constants.PasswordIncorrect)
 		}
 
@@ -102,10 +102,10 @@ func LoginQH(user structs.UserDetailsRequestPayloadType) (structs.UserDetailsRes
 func RegisterQH(user structs.UserDetailsRequestPayloadType) (string, error) {
 	if user.Username == "" {
 		return "", errors.New(constants.UsernameCantBeEmpty)
-	} else if user.Passwrod == "" {
+	} else if user.Password == "" {
 		return "", errors.New(constants.PasswordCantBeEmpty)
 	} else {
-		newPassword, err := utils.Hash(user.Passwrod)
+		newPassword, err := utils.Hash(user.Password)
 		if err != nil {
 			return "", errors.New(constants.Failed)
 		}

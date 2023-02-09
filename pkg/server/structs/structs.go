@@ -17,7 +17,7 @@ type ChatType struct {
 
 type UserDetailsRequestPayloadType struct {
 	Username string
-	Passwrod string
+	Password string
 }
 
 type UserDetailsResponsePayloadType struct {

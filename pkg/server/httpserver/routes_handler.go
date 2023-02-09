@@ -59,7 +59,7 @@ func Registration(ctx *gin.Context) {
 			"message": constants.UsernameCantBeEmpty,
 		})
 		return
-	} else if user.Passwrod == "" {
+	} else if user.Password == "" {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"message": constants.PasswordCantBeEmpty,
 		})
@@ -95,7 +95,7 @@ func Login(ctx *gin.Context) {
 			"message": constants.UsernameCantBeEmpty,
 		})
 		return
-	} else if user.Passwrod == "" {
+	} else if user.Password == "" {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"message": constants.PasswordCantBeEmpty,
 		})
