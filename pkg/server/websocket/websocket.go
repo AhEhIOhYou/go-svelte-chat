@@ -51,15 +51,16 @@ func handleSocketPayloadEvents(c *ClientType, socketEvent structs.SocketEventTyp
 		} else {
 
 			log.Println("User with id: ", userID, " online")
+			httpserver.UpdateUserOnlineStatus(userID, "Y")
 
 			newUserOnlinePayload := structs.SocketEventType{
 				EventName: "chatlist-res",
 				EventPayload: chatlistResponseType{
-					Type: "user-online",
+					Type: "user-connected",
 					Chatlist: structs.UserDetailsResponsePayloadType{
 						UserID:   userDetails.ID,
 						Username: userDetails.Username,
-						Online:   userDetails.Online,
+						Online:   "Y",
 					},
 				},
 			}
@@ -118,7 +119,7 @@ func handleSocketPayloadEvents(c *ClientType, socketEvent structs.SocketEventTyp
 
 func (c *ClientType) readPump() {
 	var socketEvent structs.SocketEventType
-	defer 	unRegisterAndCloseConn(c)
+	defer unRegisterAndCloseConn(c)
 	setSocketPayloadReadConfig(c)
 
 	for {
@@ -198,7 +199,7 @@ func CreateNewSocketUser(hub *HubType, conn *websocket.Conn, userID string) {
 		userID: userID,
 	}
 	client.hub.register <- client
-	
+
 	go client.writePump()
 	go client.readPump()
 }
