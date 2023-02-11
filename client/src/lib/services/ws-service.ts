@@ -1,9 +1,6 @@
 const WS_ENDPOINT = 'ws://localhost:8080';
 
-import EventEmiter from 'eventemitter3';
-
 let wsConnection = null;
-const eventEmitter = new EventEmiter();
 
 export function connectToWebSocket(userID) {
 	if (userID === "" && userID === null && userID === undefined) {
@@ -44,48 +41,40 @@ export function closeWebSocketConnection() {
 	wsConnection.close(1000, 'User has left the chat');
 }
 
-export function listenToWebSocketMessages() {
+export function listenToWebSocketMessages(callback) {
 	if (wsConnection === null) {
 		return;
 	}
 
 	wsConnection.onclose = (event) => {
-		eventEmitter.emit('disconnect', event);
+		callback(event);
 	};
 
 	wsConnection.onmessage = (event) => {
 		try {
 			const socketPayload = JSON.parse(event.data);
 			switch (socketPayload.eventName) {
-				case 'chatlist-resp':
+				case 'chatlist-res':
 					if (!socketPayload.eventPayload) {
 						return
 					}
-					eventEmitter.emit('chatlist-res', socketPayload.eventPayload);
-
+					callback(socketPayload.eventPayload);
 					break;
-
 				case 'disconnect':
 					if (!socketPayload.eventPayload) {
 						return
 					}
-					eventEmitter.emit('chatlist-res', socketPayload.eventPayload);
-
+					callback(socketPayload.eventPayload);
 					break;
-
 				case 'message-res':
-
 					if (!socketPayload.eventPayload) {
 						return
 					}
-
-					eventEmitter.emit('message-res', socketPayload.eventPayload);
+					callback(socketPayload.eventPayload);
 					break;
-
 				default:
 					break;
 			}
-
 		} catch (error) {
 			console.log(error)
 			console.warn('Something went wrong while decoding the Message Payload')

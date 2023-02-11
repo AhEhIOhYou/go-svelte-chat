@@ -1,23 +1,19 @@
 <script lang="ts">
-	import type { PageData } from './$types';
 	import { onDestroy, onMount } from 'svelte';
-
-	import { getStores, navigating, page, updated } from '$app/stores';
 	import { getItemInLS, removeItemInLS } from '@/lib/services/storage-service';
-	import Chatlist from '@/lib/components/chat-list/Chatlist.svelte';
+	import Chatlist from '@/lib/components/chatlist/Chatlist.svelte';
 	import { userSessionCheckHTTPRequest } from '@/lib/services/api-service';
 	import {
 		closeWebSocketConnection,
 		connectToWebSocket,
-		listenToWebSocketMessages,
-		sendWebSocketMessage
+		listenToWebSocketMessages
 	} from '@/lib/services/ws-service';
 
 	let userDetails;
+	let chatlist = [];
 
 	onMount(async () => {
-		userDetails = JSON.parse(localStorage.getItem('userDetails'));
-		
+		userDetails = getItemInLS('userDetails');
 		if (!userDetails) {
 			window.location.href = '/user/login';
 		} else {
@@ -31,7 +27,29 @@
 		if (wsConnection === null) {
 			throw new Error(wsConnection.message);
 		} else {
-			listenToWebSocketMessages();
+			listenToWebSocketMessages(function (data) {
+				switch (data.type) {
+					case 'my-chatlist':
+						chatlist = data.chatlist ?? [];
+						break;
+					case 'user-disconnected':
+						chatlist.forEach((user, index) => {
+							if (user.userId === data.chatlist.userId) {
+								chatlist[index].online = 'N';
+							}
+						});
+						break;
+					case 'user-connected':
+						chatlist.forEach((user, index) => {
+							if (user.userId === data.chatlist.userId) {
+								chatlist[index].online = 'Y';
+							}
+						});
+						break;
+					default:
+						console.log(data);
+				}
+			});
 		}
 	});
 
@@ -39,20 +57,19 @@
 		closeWebSocketConnection();
 	});
 
-	export let data: PageData;
-
 	const logout = () => {
-		// sendWebSocketMessage('mama');
 		removeItemInLS('userDetails');
 		closeWebSocketConnection();
-		// window.location.href = '/';
+		window.location.href = '/';
 	};
 </script>
 
 <div class="title">Home</div>
 <div>
 	ChatList
-	<Chatlist />
+	{#key chatlist}
+		<Chatlist {chatlist} />
+	{/key}
 </div>
 <div>Conversation</div>
 <button on:click={logout}> Logout </button>

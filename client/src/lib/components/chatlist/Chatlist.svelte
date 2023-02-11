@@ -1,35 +1,17 @@
 <script lang="ts">
-	export let chatList = [
-		// {
-		// 	username: 'user1',
-		// 	online: 'Y'
-		// },
-		// {
-		// 	username: 'user2',
-		// 	online: 'N'
-		// },
-		// {
-		// 	username: 'user3',
-		// 	online: 'N'
-		// },
-		// {
-		// 	username: 'user4',
-		// 	online: 'Y'
-		// },
-		// {
-		// 	username: 'user5',
-		// 	online: 'N'
-		// },
-		
-	]
+	export let chatlist = [];
 </script>
 
 <div class="chatlist-container">
 	<div class="chatlist">
-		{#each chatList as user}
-			<div class="chat__item">
+		{#each chatlist as user}
+			<div id={user.userId} class="chat__item">
 				{user.username}
-				<span class={user.online === 'Y' ? 'online' : 'offline'}></span>
+				{#if user.online === 'Y'}
+					<div class="online" />
+				{:else}
+					<div class="offline" />
+				{/if}
 			</div>
 		{/each}
 	</div>
