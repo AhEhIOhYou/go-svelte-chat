@@ -27,8 +27,8 @@ type UserDetailsResponsePayloadType struct {
 }
 
 type SocketEventType struct {
-	Name    string      `json:"eventName"`
-	Payload interface{} `json:"payload"`
+	EventName    string      `json:"eventName"`
+	EventPayload interface{} `json:"eventPayload"`
 }
 
 type MessagePayloadType struct {

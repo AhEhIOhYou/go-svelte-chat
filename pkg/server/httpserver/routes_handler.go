@@ -20,12 +20,14 @@ func IsUsernameAvailable(ctx *gin.Context) {
 
 	var IsAlphaNumeric = regexp.MustCompile(`^[A-Za-z0-9]([A-Za-z0-9_-]*[A-Za-z0-9])?$`).MatchString
 	if !IsAlphaNumeric(username) {
-		ctx.JSON(http.StatusBadRequest, gin.H{
+		ctx.JSON(http.StatusOK, gin.H{
+			"available": false,
 			"message": constants.UsernameInvalid,
 		})
 		return
 	} else if len(username) < 3 || len(username) > 20 {
-		ctx.JSON(http.StatusBadRequest, gin.H{
+		ctx.JSON(http.StatusOK, gin.H{
+			"available": false,
 			"message": constants.UsernameLenError,
 		})
 		return
@@ -33,10 +35,12 @@ func IsUsernameAvailable(ctx *gin.Context) {
 		isUsernameAvailable := IsUsernameAvaliableQH(username)
 		if isUsernameAvailable {
 			ctx.JSON(http.StatusOK, gin.H{
+				"available": true,
 				"message": constants.UsernameIsAvailable,
 			})
 		} else {
-			ctx.JSON(http.StatusBadRequest, gin.H{
+			ctx.JSON(http.StatusOK, gin.H{
+				"available": false,
 				"message": constants.UsernameIsAlreadyTaken,
 			})
 		}
@@ -72,7 +76,7 @@ func Registration(ctx *gin.Context) {
 			})
 		} else {
 			ctx.JSON(http.StatusOK, gin.H{
-				"userID":  userObjID,
+				"userId":  userObjID,
 				"message": constants.RegistrationSuccessful,
 			})
 		}
@@ -116,7 +120,7 @@ func Login(ctx *gin.Context) {
 }
 
 func UserSessionCheck(ctx *gin.Context) {
-	userID := ctx.Param("userID")
+	userID := ctx.Query("userID")
 
 	var IsAlphaNumeric = regexp.MustCompile(`^[A-Za-z0-9]([A-Za-z0-9_-]*[A-Za-z0-9])?$`).MatchString
 	if !IsAlphaNumeric(userID) {

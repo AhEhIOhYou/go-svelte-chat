@@ -42,9 +42,9 @@ func handleSocketPayloadEvents(c *ClientType, socketEvent structs.SocketEventTyp
 		Chatlist interface{} `json:"chatlist"`
 	}
 
-	switch socketEvent.Name {
+	switch socketEvent.EventName {
 	case "join":
-		userID := socketEvent.Payload.(string)
+		userID := socketEvent.EventPayload.(string)
 		userDetails := httpserver.GetUserByUserID(userID)
 		if userDetails == (structs.UserDetailsType{}) {
 			log.Println("Invalid user with id: ", userID, " tried to join")
@@ -53,8 +53,8 @@ func handleSocketPayloadEvents(c *ClientType, socketEvent structs.SocketEventTyp
 				log.Println("User with id: ", userID, " joined")
 			} else {
 				newUserOnlinePayload := structs.SocketEventType{
-					Name: "chatlist-res",
-					Payload: chatlistResponseType{
+					EventName: "chatlist-res",
+					EventPayload: chatlistResponseType{
 						Type: "new-user-joined",
 						Chatlist: structs.UserDetailsResponsePayloadType{
 							UserID:   userDetails.ID,
@@ -67,8 +67,8 @@ func handleSocketPayloadEvents(c *ClientType, socketEvent structs.SocketEventTyp
 				BroadcastToAllExceptMe(c.hub, newUserOnlinePayload, userDetails.ID)
 
 				allOnlineUsersPayload := structs.SocketEventType{
-					Name: "chatlist-res",
-					Payload: chatlistResponseType{
+					EventName: "chatlist-res",
+					EventPayload: chatlistResponseType{
 						Type:     "my-chatlist",
 						Chatlist: httpserver.GetAllOnlineUsers(userDetails.ID),
 					},
@@ -78,14 +78,14 @@ func handleSocketPayloadEvents(c *ClientType, socketEvent structs.SocketEventTyp
 			}
 		}
 	case "disconnect":
-		if socketEvent.Payload != nil {
-			userID := socketEvent.Payload.(string)
+		if socketEvent.EventPayload != nil {
+			userID := socketEvent.EventPayload.(string)
 			userDetails := httpserver.GetUserByUserID(userID)
 			httpserver.UpdateUserOnlineStatus(userID, "N")
 
 			BroadcastToAll(c.hub, structs.SocketEventType{
-				Name: "chatlist-res",
-				Payload: chatlistResponseType{
+				EventName: "chatlist-res",
+				EventPayload: chatlistResponseType{
 					Type: "user-disconnected",
 					Chatlist: structs.UserDetailsResponsePayloadType{
 						UserID:   userDetails.ID,
@@ -96,9 +96,9 @@ func handleSocketPayloadEvents(c *ClientType, socketEvent structs.SocketEventTyp
 			})
 		}
 	case "message":
-		message := socketEvent.Payload.(map[string]interface{})["message"].(string)
-		fromUserID := socketEvent.Payload.(map[string]interface{})["fromUserID"].(string)
-		toUserID := socketEvent.Payload.(map[string]interface{})["toUserID"].(string)
+		message := socketEvent.EventPayload.(map[string]interface{})["message"].(string)
+		fromUserID := socketEvent.EventPayload.(map[string]interface{})["fromUserID"].(string)
+		toUserID := socketEvent.EventPayload.(map[string]interface{})["toUserID"].(string)
 
 		if message != "" && fromUserID != "" && toUserID != "" {
 			messagePayload := structs.MessagePayloadType{
@@ -109,8 +109,8 @@ func handleSocketPayloadEvents(c *ClientType, socketEvent structs.SocketEventTyp
 			httpserver.StoreNewChatMessage(messagePayload)
 
 			allOnlineUsersPayload := structs.SocketEventType{
-				Name:    "message-res",
-				Payload: messagePayload,
+				EventName:    "message-res",
+				EventPayload: messagePayload,
 			}
 			SendToClient(c.hub, allOnlineUsersPayload, toUserID)
 		}
@@ -119,24 +119,26 @@ func handleSocketPayloadEvents(c *ClientType, socketEvent structs.SocketEventTyp
 
 func (c *ClientType) readPump() {
 	var socketEvent structs.SocketEventType
-	defer unRegisterAndCloseConn(c)
+	defer 	unRegisterAndCloseConn(c)
 	setSocketPayloadReadConfig(c)
 
 	for {
 		_, payload, err := c.wsConn.ReadMessage()
+
+		if err != nil {
+			if websocket.IsCloseError(err, websocket.CloseNormalClosure, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
+				break
+			} else {
+				log.Printf("error: %v", err)
+				break
+			}
+		}
 
 		decoder := json.NewDecoder(bytes.NewReader(payload))
 		decoderErr := decoder.Decode(&socketEvent)
 
 		if decoderErr != nil {
 			log.Println("Error decoding socket event: ", decoderErr)
-			break
-		}
-
-		if err != nil {
-			if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
-				log.Printf("Error: %v", err)
-			}
 			break
 		}
 
@@ -180,7 +182,6 @@ func (c *ClientType) writePump() {
 			if err := w.Close(); err != nil {
 				return
 			}
-
 		case <-ticker.C:
 			c.wsConn.SetWriteDeadline(time.Now().Add(writeWait))
 			if err := c.wsConn.WriteMessage(websocket.PingMessage, nil); err != nil {
@@ -197,26 +198,25 @@ func CreateNewSocketUser(hub *HubType, conn *websocket.Conn, userID string) {
 		send:   make(chan structs.SocketEventType),
 		userID: userID,
 	}
-
+	client.hub.register <- client
+	
 	go client.writePump()
 	go client.readPump()
-
-	client.hub.register <- client
 }
 
 func HandleUserRegisterEvent(hub *HubType, client *ClientType) {
 	hub.clients[client] = true
 	handleSocketPayloadEvents(client, structs.SocketEventType{
-		Name:    "join",
-		Payload: client.userID,
+		EventName:    "join",
+		EventPayload: client.userID,
 	})
 }
 
 func HandleUserDisconnectEvent(hub *HubType, client *ClientType) {
 	if _, ok := hub.clients[client]; ok {
 		handleSocketPayloadEvents(client, structs.SocketEventType{
-			Name:    "disconnect",
-			Payload: client.userID,
+			EventName:    "disconnect",
+			EventPayload: client.userID,
 		})
 		delete(hub.clients, client)
 		close(client.send)
