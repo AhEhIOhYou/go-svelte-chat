@@ -43,39 +43,38 @@ func handleSocketPayloadEvents(c *ClientType, socketEvent structs.SocketEventTyp
 	}
 
 	switch socketEvent.EventName {
-	case "join":
+	case "online":
 		userID := socketEvent.EventPayload.(string)
 		userDetails := httpserver.GetUserByUserID(userID)
 		if userDetails == (structs.UserDetailsType{}) {
 			log.Println("Invalid user with id: ", userID, " tried to join")
 		} else {
-			if userDetails.Online == "N" {
-				log.Println("User with id: ", userID, " joined")
-			} else {
-				newUserOnlinePayload := structs.SocketEventType{
-					EventName: "chatlist-res",
-					EventPayload: chatlistResponseType{
-						Type: "new-user-joined",
-						Chatlist: structs.UserDetailsResponsePayloadType{
-							UserID:   userDetails.ID,
-							Username: userDetails.Username,
-							Online:   userDetails.Online,
-						},
+
+			log.Println("User with id: ", userID, " online")
+
+			newUserOnlinePayload := structs.SocketEventType{
+				EventName: "chatlist-res",
+				EventPayload: chatlistResponseType{
+					Type: "user-online",
+					Chatlist: structs.UserDetailsResponsePayloadType{
+						UserID:   userDetails.ID,
+						Username: userDetails.Username,
+						Online:   userDetails.Online,
 					},
-				}
-
-				BroadcastToAllExceptMe(c.hub, newUserOnlinePayload, userDetails.ID)
-
-				allOnlineUsersPayload := structs.SocketEventType{
-					EventName: "chatlist-res",
-					EventPayload: chatlistResponseType{
-						Type:     "my-chatlist",
-						Chatlist: httpserver.GetAllOnlineUsers(userDetails.ID),
-					},
-				}
-
-				SendToClient(c.hub, allOnlineUsersPayload, userDetails.ID)
+				},
 			}
+
+			BroadcastToAllExceptMe(c.hub, newUserOnlinePayload, userDetails.ID)
+
+			allOnlineUsersPayload := structs.SocketEventType{
+				EventName: "chatlist-res",
+				EventPayload: chatlistResponseType{
+					Type:     "my-chatlist",
+					Chatlist: httpserver.GetAllOnlineUsers(userDetails.ID),
+				},
+			}
+
+			SendToClient(c.hub, allOnlineUsersPayload, userDetails.ID)
 		}
 	case "disconnect":
 		if socketEvent.EventPayload != nil {
@@ -207,7 +206,7 @@ func CreateNewSocketUser(hub *HubType, conn *websocket.Conn, userID string) {
 func HandleUserRegisterEvent(hub *HubType, client *ClientType) {
 	hub.clients[client] = true
 	handleSocketPayloadEvents(client, structs.SocketEventType{
-		EventName:    "join",
+		EventName:    "online",
 		EventPayload: client.userID,
 	})
 }
