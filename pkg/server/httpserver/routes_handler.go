@@ -4,9 +4,10 @@ import (
 	"net/http"
 	"regexp"
 
-	"github.com/gin-gonic/gin"
 	"project-eighteen/pkg/constants"
 	"project-eighteen/pkg/server/structs"
+
+	"github.com/gin-gonic/gin"
 )
 
 func Home(ctx *gin.Context) {
@@ -22,13 +23,13 @@ func IsUsernameAvailable(ctx *gin.Context) {
 	if !IsAlphaNumeric(username) {
 		ctx.JSON(http.StatusOK, gin.H{
 			"available": false,
-			"message": constants.UsernameInvalid,
+			"message":   constants.UsernameInvalid,
 		})
 		return
 	} else if len(username) < 3 || len(username) > 20 {
 		ctx.JSON(http.StatusOK, gin.H{
 			"available": false,
-			"message": constants.UsernameLenError,
+			"message":   constants.UsernameLenError,
 		})
 		return
 	} else {
@@ -36,12 +37,12 @@ func IsUsernameAvailable(ctx *gin.Context) {
 		if isUsernameAvailable {
 			ctx.JSON(http.StatusOK, gin.H{
 				"available": true,
-				"message": constants.UsernameIsAvailable,
+				"message":   constants.UsernameIsAvailable,
 			})
 		} else {
 			ctx.JSON(http.StatusOK, gin.H{
 				"available": false,
-				"message": constants.UsernameIsAlreadyTaken,
+				"message":   constants.UsernameIsAlreadyTaken,
 			})
 		}
 	}
@@ -144,8 +145,8 @@ func UserSessionCheck(ctx *gin.Context) {
 }
 
 func GetMessagesHandler(ctx *gin.Context) {
-	from := ctx.Param("from")
-	to := ctx.Param("to")
+	from := ctx.Param("userFromId")
+	to := ctx.Param("userToId")
 
 	var IsAlphaNumeric = regexp.MustCompile(`^[A-Za-z0-9]([A-Za-z0-9_-]*[A-Za-z0-9])?$`).MatchString
 	if !IsAlphaNumeric(from) || !IsAlphaNumeric(to) {
@@ -155,7 +156,16 @@ func GetMessagesHandler(ctx *gin.Context) {
 		return
 	} else {
 		messages := GetChatMessages(from, to)
+		fromData := GetUserByUserID(from)
+		toData := GetUserByUserID(to)
+
 		ctx.JSON(http.StatusOK, gin.H{
+			"details": gin.H{
+				"fromName": fromData.Username,
+				"fromId":   fromData.ID,
+				"toName":   toData.Username,
+				"toId":     toData.ID,
+			},
 			"messages": messages,
 		})
 	}

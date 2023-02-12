@@ -195,8 +195,8 @@ func GetChatMessages(from, to string) []structs.ChatType {
 
 	cursor, queryErr := collection.Find(ctx, bson.M{
 		"$or": []bson.M{
-			{"$and": []bson.M{{"toUserID": to}, {"fromUserID": from}}},
-			{"$and": []bson.M{{"toUserID": from}, {"fromUserID": to}}},
+			{"$and": []bson.M{{"to": to}, {"from": from}}},
+			{"$and": []bson.M{{"to": from}, {"from": to}}},
 		},
 	})
 	defer cancel()
