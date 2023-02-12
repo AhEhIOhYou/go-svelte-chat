@@ -2,18 +2,32 @@
 	import { onDestroy, onMount } from 'svelte';
 	import { getItemInLS, removeItemInLS } from '@/lib/services/storage-service';
 	import Chatlist from '@/lib/components/chatlist/Chatlist.svelte';
-	import { userSessionCheckHTTPRequest } from '@/lib/services/api-service';
+	import {
+		getConversationBetweenUsers,
+		userSessionCheckHTTPRequest
+	} from '@/lib/services/api-service';
 	import {
 		closeWebSocketConnection,
 		connectToWebSocket,
 		listenToWebSocketMessages
 	} from '@/lib/services/ws-service';
+	import Conversation from '@/lib/components/conversation/Conversation.svelte';
 
 	let userDetails;
 	let chatlist = [];
 
+	async function getConversation() {
+		userDetails = getItemInLS('userDetails');
+		const res = await getConversationBetweenUsers(userDetails.userID, '63e7d0b4d33087eb3f1ba1fb');
+		return res;
+	}
+
+	const conversation = getConversation();
+	let newMessage = null;
+
 	onMount(async () => {
 		userDetails = getItemInLS('userDetails');
+
 		if (!userDetails) {
 			window.location.href = '/user/login';
 		} else {
@@ -24,6 +38,7 @@
 		}
 
 		const wsConnection = connectToWebSocket(userDetails.userID);
+
 		if (wsConnection === null) {
 			throw new Error(wsConnection.message);
 		} else {
@@ -45,6 +60,9 @@
 								chatlist[index].online = 'Y';
 							}
 						});
+						break;
+					case 'new-message':
+						newMessage = data;
 						break;
 					default:
 						console.log(data);
@@ -71,5 +89,12 @@
 		<Chatlist {chatlist} />
 	{/key}
 </div>
-<div>Conversation</div>
+<div>
+	Conversation
+	{#await conversation}
+		<div>Loading...</div>
+	{:then conversation}
+		<Conversation {conversation} {newMessage} />
+	{/await}
+</div>
 <button on:click={logout}> Logout </button>
