@@ -70,6 +70,7 @@ export function listenToWebSocketMessages(callback) {
 					if (!socketPayload.eventPayload) {
 						return
 					}
+					socketPayload.eventPayload.type = 'new-message';
 					callback(socketPayload.eventPayload);
 					break;
 				default:

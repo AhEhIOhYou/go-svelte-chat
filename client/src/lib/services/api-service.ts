@@ -50,7 +50,7 @@ export async function userSessionCheckHTTPRequest(username) {
 
 
 export async function getConversationBetweenUsers(toUserID, fromUserID) {
-	const response = await fetch(`${API_ENDPOINTS}/getConversation/${toUserID}/${fromUserID}`, {
+	const response = await fetch(`${API_ENDPOINTS}/chat/${fromUserID}/${toUserID}`, {
 		method: 'GET',
 		headers: {
 			'Content-Type': 'application/json'
