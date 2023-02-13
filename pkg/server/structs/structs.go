@@ -36,3 +36,15 @@ type MessagePayloadType struct {
 	To      string `json:"toUserID"`
 	Message string `json:"message"`
 }
+
+type ContactRequestPayloadType struct {
+	UserID    string `json:"userID"`
+	ContactID string `json:"contactUserID"`
+}
+
+type ContactResponseType struct {
+	UserID          string `json:"userID"`
+	ContactID       string `json:"contactUserID"`
+	ContactUsername string `json:"contactUsername"`
+	Online          string `json:"online"`
+}

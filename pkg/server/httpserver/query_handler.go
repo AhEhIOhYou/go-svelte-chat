@@ -255,3 +255,82 @@ func GetChatMessages(from, to string) []structs.ChatType {
 
 	return chatMessages
 }
+
+func SearchUserByUsername(username string) []structs.UserDetailsResponsePayloadType {
+	var users []structs.UserDetailsResponsePayloadType
+
+	collection := database.MongoDBClient.Database(os.Getenv("MONGODB_DATABASE")).Collection("users")
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+
+	cursor, queryErr := collection.Find(ctx, bson.M{
+		"username": bson.M{"$regex": username},
+	})
+	defer cancel()
+
+	if queryErr != nil {
+		return users
+	}
+
+	for cursor.Next(context.TODO()) {
+		var user structs.UserDetailsType
+		err := cursor.Decode(&user)
+		if err == nil {
+			users = append(users, structs.UserDetailsResponsePayloadType{
+				UserID:   user.ID,
+				Username: user.Username,
+				Online:   user.Online,
+			})
+		}
+	}
+
+	return users
+}
+
+func AddContactQH(contact structs.ContactRequestPayloadType) bool {
+	collection := database.MongoDBClient.Database(os.Getenv("MONGODB_DATABASE")).Collection("contacts")
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+
+	_, regErr := collection.InsertOne(ctx, bson.M{
+		"userID":    contact.UserID,
+		"contactID": contact.ContactID,
+	})
+	defer cancel()
+
+	if regErr != nil {
+		return false
+	}
+
+	return true
+}
+
+func GetContactList(userID string) []structs.ContactResponseType {
+	var contacts []structs.ContactResponseType
+
+	collection := database.MongoDBClient.Database(os.Getenv("MONGODB_DATABASE")).Collection("contacts")
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+
+	cursor, queryErr := collection.Find(ctx, bson.M{
+		"userID": userID,
+	})
+	defer cancel()
+
+	if queryErr != nil {
+		return contacts
+	}
+
+	for cursor.Next(context.TODO()) {
+		var contact structs.ContactResponseType
+		err := cursor.Decode(&contact)
+		if err == nil {
+			contactDetails := GetUserByUserID(contact.ContactID)
+			contacts = append(contacts, structs.ContactResponseType{
+				UserID:          contact.UserID,
+				ContactID:       contact.ContactID,
+				ContactUsername: contactDetails.Username,
+				Online:          contactDetails.Online,
+			})
+		}
+	}
+
+	return contacts
+}

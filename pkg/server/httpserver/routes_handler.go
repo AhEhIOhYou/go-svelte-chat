@@ -170,3 +170,67 @@ func GetMessagesHandler(ctx *gin.Context) {
 		})
 	}
 }
+
+func SearchUser(ctx *gin.Context) {
+	username := ctx.Query("username")
+
+	var IsAlphaNumeric = regexp.MustCompile(`^[A-Za-z0-9]([A-Za-z0-9_-]*[A-Za-z0-9])?$`).MatchString
+	if !IsAlphaNumeric(username) {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"message": constants.Failed,
+		})
+		return
+	} else {
+		users := SearchUserByUsername(username)
+		ctx.JSON(http.StatusOK, gin.H{
+			"users": users,
+		})
+	}
+}
+
+func AddContact(ctx *gin.Context) {
+	var contact structs.ContactRequestPayloadType
+	err := ctx.BindJSON(&contact)
+
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"message": constants.Failed,
+		})
+		return
+	}
+
+	if contact.UserID == "" || contact.ContactID == "" {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"message": constants.Failed,
+		})
+		return
+	} else {
+		succes := AddContactQH(contact)
+		if succes != true {
+			ctx.JSON(http.StatusBadRequest, gin.H{
+				"message": constants.Failed,
+			})
+		} else {
+			ctx.JSON(http.StatusOK, gin.H{
+				"message": constants.ContactAdded,
+			})
+		}
+	}
+}
+
+func GetContacts(ctx *gin.Context) {
+	userID := ctx.Query("userID")
+
+	var IsAlphaNumeric = regexp.MustCompile(`^[A-Za-z0-9]([A-Za-z0-9_-]*[A-Za-z0-9])?$`).MatchString
+	if !IsAlphaNumeric(userID) {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"message": constants.Failed,
+		})
+		return
+	} else {
+		contacts := GetContactList(userID)
+		ctx.JSON(http.StatusOK, gin.H{
+			"contacts": contacts,
+		})
+	}
+}

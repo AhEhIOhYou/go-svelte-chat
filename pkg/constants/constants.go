@@ -19,4 +19,5 @@ const (
 	RegistrationSuccessful = "Registration successful"
 	LoginSuccessful = "Login successful"
 	YouAreLoggedIn = "You are logged in"
+	ContactAdded = "Contact added"
 )
