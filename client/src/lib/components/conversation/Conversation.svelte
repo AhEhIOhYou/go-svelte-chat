@@ -1,28 +1,37 @@
 <script lang="ts">
+	import { getConversationBetweenUsers } from '@/lib/services/api-service';
 	import { sendWebSocketMessage } from '@/lib/services/ws-service';
 	import { onMount, afterUpdate, beforeUpdate } from 'svelte';
-
+	
+	export let currentUserID;
+	export let buddyUserID;
+	export let newMessage = null;
 	let div;
 	let autoscroll;
+	let conversation = null;
+	let messages = [];
 
-	export let conversation;
-	export let newMessage = null;
-	let messages = conversation.messages ?? [];
+	async function getConversation(to, from: string) {
+		const res = await getConversationBetweenUsers(to, from);
+		return res;
+	}
 
-	onMount(() => {
+	onMount(async () => {
 		div.scrollTo(0, div.scrollHeight);
+		conversation = await getConversation(currentUserID, buddyUserID);
+		messages = conversation.messages;
 	});
 
 	beforeUpdate(() => {
 		autoscroll = div && div.offsetHeight + div.scrollTop > div.scrollHeight - 20;
 	});
 
-	afterUpdate(() => {
+	afterUpdate(() =>	 {
 		if (autoscroll) div.scrollTo(0, div.scrollHeight);
 	});
 
 	$: if (newMessage) {
-		messages = messages.concat(newMessage);
+		if (conversation) messages = messages.concat(newMessage);
 		newMessage = null;
 	}
 
@@ -44,34 +53,38 @@
 	}
 </script>
 
-<div class="conv">
-	<div class="chat-scrollable" bind:this={div}>
-		{#each messages as message}
-			<div class="message">
-				<div class="message__outer">
-					<div class="message__name">
-						<span
-							>{message.fromUserID == conversation.details.toId
+{#await conversation}
+	<div>Loading...</div>
+{:then conversation}
+	<div class="conv">
+		<div class="chat-scrollable" bind:this={div}>
+			{#each messages as message}
+				<div class="message">
+					<div class="message__outer">
+						<div class="message__name">
+							<span
+								>{message.fromUserID == conversation.details.toId
+									? 'me'
+									: conversation.details.fromName}</span
+							>
+						</div>
+						<div
+							class="message__inner {message.fromUserID == conversation.details.toId
 								? 'me'
-								: conversation.details.fromName}</span
+								: 'buddy'} "
 						>
-					</div>
-					<div
-						class="message__inner {message.fromUserID == conversation.details.toId
-							? 'me'
-							: 'buddy'} "
-					>
-						<div class="message__bubble">{message.message}</div>
-						<div class="message__spacer" />
+							<div class="message__bubble">{message.message}</div>
+							<div class="message__spacer" />
+						</div>
 					</div>
 				</div>
-			</div>
-		{/each}
+			{/each}
+		</div>
+		<div class="input">
+			<input on:keydown={handleKeydown} />
+		</div>
 	</div>
-	<div class="input">
-		<input on:keydown={handleKeydown} />
-	</div>
-</div>
+{/await}
 
 <style lang="scss">
 	.chat-scrollable {

@@ -3,7 +3,6 @@
 	import { getItemInLS, removeItemInLS } from '@/lib/services/storage-service';
 	import Chatlist from '@/lib/components/chatlist/Chatlist.svelte';
 	import {
-		getConversationBetweenUsers,
 		userSessionCheckHTTPRequest
 	} from '@/lib/services/api-service';
 	import {
@@ -13,31 +12,24 @@
 	} from '@/lib/services/ws-service';
 	import Conversation from '@/lib/components/conversation/Conversation.svelte';
 
-	let userDetails;
+	let currentUserDetails;
+	let buddyUserID;
 	let chatlist = [];
-
-	async function getConversation() {
-		userDetails = getItemInLS('userDetails');
-		const res = await getConversationBetweenUsers(userDetails.userID, '63e7d0b4d33087eb3f1ba1fb');
-		return res;
-	}
-
-	const conversation = getConversation();
 	let newMessage = null;
 
 	onMount(async () => {
-		userDetails = getItemInLS('userDetails');
+		currentUserDetails = getItemInLS('userDetails');
 
-		if (!userDetails) {
+		if (!currentUserDetails) {
 			window.location.href = '/user/login';
 		} else {
-			const isUserLoggedInResponse = await userSessionCheckHTTPRequest(userDetails.userID);
+			const isUserLoggedInResponse = await userSessionCheckHTTPRequest(currentUserDetails.userID);
 			if (!isUserLoggedInResponse) {
 				window.location.href = '/user/login';
 			}
 		}
 
-		const wsConnection = connectToWebSocket(userDetails.userID);
+		const wsConnection = connectToWebSocket(currentUserDetails.userID);
 
 		if (wsConnection === null) {
 			throw new Error(wsConnection.message);
@@ -86,15 +78,14 @@
 <div>
 	ChatList
 	{#key chatlist}
-		<Chatlist {chatlist} />
+		<Chatlist {chatlist} on:user-selected={(event) => (buddyUserID = event.detail)} />
 	{/key}
 </div>
 <div>
-	Conversation
-	{#await conversation}
-		<div>Loading...</div>
-	{:then conversation}
-		<Conversation {conversation} {newMessage} />
-	{/await}
+	{#if buddyUserID}
+		{#key buddyUserID}
+			<Conversation currentUserID={currentUserDetails.userID} {buddyUserID} {newMessage} />
+		{/key}
+	{/if}
 </div>
 <button on:click={logout}> Logout </button>
