@@ -8,7 +8,7 @@
 	<a href="/home/">Home</a>
 </div>
 <div>
-	<a href="/user/regisrtation/">Зарегестрироваться</a>
+	<a href="/user/regisrtation/">Зарегистрироваться</a>
 </div>
 <div>
 	<a href="/user/login/">Войти</a>

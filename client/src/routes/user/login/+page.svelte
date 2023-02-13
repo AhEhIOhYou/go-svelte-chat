@@ -5,6 +5,7 @@
 
 	async function handleLogin({ detail: { username, password } }) {
 		const userDetails = await loginHTTPRequest(username, password);
+
 		if (userDetails) {
 			setItemInLS('userDetails', { userID: userDetails.user.userId });
 			window.location.href = '/home';

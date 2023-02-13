@@ -38,7 +38,7 @@
 		<input bind:value={password} type="password" id="password" placeholder="Password" />
 	</div>
 	<div class="btn">
-		<button type="submit" on:click={regisrtation}>Registrate</button>
+		<button type="submit" on:click={regisrtation}>Regisrtation</button>
 	</div>
 	{#if username}
 		{#if nameAvailable.available}
