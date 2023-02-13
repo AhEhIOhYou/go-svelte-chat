@@ -169,6 +169,41 @@ func GetAllOnlineUsers(userID string) []structs.UserDetailsResponsePayloadType {
 	return onlineUsers
 }
 
+func GetAllUsers(userID string) []structs.UserDetailsResponsePayloadType {
+	var onlineUsers []structs.UserDetailsResponsePayloadType
+
+	docID, err := primitive.ObjectIDFromHex(userID)
+	if err != nil {
+		return onlineUsers
+	}
+
+	collection := database.MongoDBClient.Database(os.Getenv("MONGODB_DATABASE")).Collection("users")
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+
+	cursor, queryErr := collection.Find(ctx, bson.M{
+		"_id": bson.M{"$ne": docID},
+	})
+	defer cancel()
+
+	if queryErr != nil {
+		return onlineUsers
+	}
+
+	for cursor.Next(context.TODO()) {
+		var user structs.UserDetailsType
+		err := cursor.Decode(&user)
+		if err == nil {
+			onlineUsers = append(onlineUsers, structs.UserDetailsResponsePayloadType{
+				UserID:   user.ID,
+				Username: user.Username,
+				Online:   user.Online,
+			})
+		}
+	}
+
+	return onlineUsers
+}
+
 func StoreNewChatMessage(message structs.MessagePayloadType) bool {
 	collection := database.MongoDBClient.Database(os.Getenv("MONGODB_DATABASE")).Collection("messages")
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)

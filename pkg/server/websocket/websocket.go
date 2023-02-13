@@ -71,7 +71,7 @@ func handleSocketPayloadEvents(c *ClientType, socketEvent structs.SocketEventTyp
 				EventName: "chatlist-res",
 				EventPayload: chatlistResponseType{
 					Type:     "my-chatlist",
-					Chatlist: httpserver.GetAllOnlineUsers(userDetails.ID),
+					Chatlist: httpserver.GetAllUsers(userDetails.ID),
 				},
 			}
 
