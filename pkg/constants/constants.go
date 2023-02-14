@@ -2,10 +2,10 @@ package constants
 
 const (
 	//Database proccess
-	DatabaseConnectionStart = "Connecting to database..."
-	DatabaseConnectionError = "Database connection error: %v"
-	DatabaseConnectionSuccess = "Connected to database"
-	DatabaseError = "Database error: %v"
+	DatabaseConnectionStart = "connecting to database..."
+	DatabaseConnectionError = "database connection error: %v"
+	DatabaseConnectionSuccess = "connected to database"
+	DatabaseError = "database error: %v"
 
 	//Error messages
 	Failed = "request failed"

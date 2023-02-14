@@ -13,7 +13,7 @@ var _ MessageAppInterface = &MessageApp{}
 
 type MessageAppInterface interface {
 	CreateMessage(*entities.Message) (*entities.Message, error)
-	GetMessageByChatID(string, int, int) ([]*entities.Message, error)
+	GetMessagesByChatID(string, int64, int64) ([]*entities.Message, error)
 	UpdateMessage(*entities.Message) (*entities.Message, error)
 	DeleteMessage(string) error
 	DeleteMessagesByChatID(string) error
@@ -23,8 +23,8 @@ func (m *MessageApp) CreateMessage(message *entities.Message) (*entities.Message
 	return m.messageRepository.CreateMessage(message)
 }
 
-func (m *MessageApp) GetMessageByChatID(chatID string, limit int, offset int) ([]*entities.Message, error) {
-	return m.messageRepository.GetMessageByChatID(chatID, limit, offset)
+func (m *MessageApp) GetMessagesByChatID(chatID string, limit int64, offset int64) ([]*entities.Message, error) {
+	return m.messageRepository.GetMessagesByChatID(chatID, limit, offset)
 }
 
 func (m *MessageApp) UpdateMessage(message *entities.Message) (*entities.Message, error) {

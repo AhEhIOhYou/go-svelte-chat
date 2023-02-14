@@ -16,7 +16,7 @@ type ChatAppInterface interface {
 	GetChatByID(string) (*entities.Chat, error)
 	GetChatsByParticipantID(string) ([]*entities.Chat, error)
 	UpdateChat(*entities.Chat) (*entities.Chat, error)
-	AddParticipantToChat(string, string) (*entities.Chat, error)
+	AddParticipantToChat(string, string) error
 	DeleteParticipantFromChat(string, string) error
 	DeleteChat(string) error
 }
@@ -37,7 +37,7 @@ func (c *ChatApp) UpdateChat(chat *entities.Chat) (*entities.Chat, error) {
 	return c.chatRep.UpdateChat(chat)
 }
 
-func (c *ChatApp) AddParticipantToChat(chatID string, userID string) (*entities.Chat, error) {
+func (c *ChatApp) AddParticipantToChat(chatID string, userID string) error {
 	return c.chatRep.AddParticipantToChat(chatID, userID)
 }
 

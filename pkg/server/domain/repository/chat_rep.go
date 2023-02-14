@@ -9,7 +9,7 @@ type ChatRepository interface {
 	GetChatByID(string) (*entities.Chat, error)
 	GetChatsByParticipantID(string) ([]*entities.Chat, error)
 	UpdateChat(*entities.Chat) (*entities.Chat, error)
-	AddParticipantToChat(string, string) (*entities.Chat, error)
+	AddParticipantToChat(string, string) error
 	DeleteParticipantFromChat(string, string) error
 	DeleteChat(string) error
 }

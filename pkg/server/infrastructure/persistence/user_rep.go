@@ -42,17 +42,17 @@ func (r *UserRepo) CreateUser(user *entities.User) (string, error) {
 	return regRes.InsertedID.(primitive.ObjectID).Hex(), nil
 }
 
-func (r *UserRepo) GetUserByID(id string) (*entities.User, error) {
+func (r *UserRepo) GetUserByID(userID string) (*entities.User, error) {
 	var user entities.User
 
-	docID, err := primitive.ObjectIDFromHex(id)
+	userDocID, err := primitive.ObjectIDFromHex(userID)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf(constants.DatabaseError, err)
 	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 
-	_ = r.collection.FindOne(ctx, bson.M{"_id": docID}).Decode(&user)
+	_ = r.collection.FindOne(ctx, bson.M{"_id": userDocID}).Decode(&user)
 
 	defer cancel()
 
@@ -88,7 +88,7 @@ func (r *UserRepo) UpdateUser(user *entities.User) (*entities.User, error) {
 
 	docID, err := primitive.ObjectIDFromHex(user.ID)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf(constants.DatabaseError, err)
 	}
 
 	var status string
@@ -100,9 +100,9 @@ func (r *UserRepo) UpdateUser(user *entities.User) (*entities.User, error) {
 	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
 
 	_, queryError := r.collection.UpdateOne(ctx, bson.M{"_id": docID}, bson.M{"$set": bson.M{"online": status}})
-	defer cancel()
 
 	if queryError != nil {
 		return nil, fmt.Errorf(constants.DatabaseError, queryError)
@@ -111,16 +111,16 @@ func (r *UserRepo) UpdateUser(user *entities.User) (*entities.User, error) {
 	return &userUp, nil
 }
 
-func (r *UserRepo) DeleteUser(id string) error {
+func (r *UserRepo) DeleteUser(userID string) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
 
-	docID, err := primitive.ObjectIDFromHex(id)
+	userDocID, err := primitive.ObjectIDFromHex(userID)
 	if err != nil {
-		return err
+		return fmt.Errorf(constants.DatabaseError, err)
 	}
 
-	_, queryError := r.collection.DeleteOne(ctx, bson.M{"_id": docID})
-	defer cancel()
+	_, queryError := r.collection.DeleteOne(ctx, bson.M{"_id": userDocID})
 
 	if queryError != nil {
 		return fmt.Errorf(constants.DatabaseError, queryError)
