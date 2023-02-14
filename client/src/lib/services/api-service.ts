@@ -58,3 +58,13 @@ export async function getConversationBetweenUsers(toUserID, fromUserID) {
 	});
 	return await response.json();
 }
+
+export async function searchUserByNameHTTPRequest(username) {
+	const response = await fetch(`${API_ENDPOINTS}/search-user?username=${username}`, {
+		method: 'GET',
+		headers: {
+			'Content-Type': 'application/json'
+		}
+	});
+	return await response.json();
+}

@@ -11,6 +11,7 @@
 		listenToWebSocketMessages
 	} from '@/lib/services/ws-service';
 	import Conversation from '@/lib/components/conversation/Conversation.svelte';
+	import Search from '@/lib/components/search/Search.svelte';
 
 	let currentUserDetails;
 	let buddyUserID;
@@ -75,6 +76,10 @@
 </script>
 
 <div class="title">Home</div>
+<div>
+	Search
+	<Search />
+</div>
 <div>
 	ChatList
 	{#key chatlist}

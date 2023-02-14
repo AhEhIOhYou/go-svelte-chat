@@ -30,7 +30,7 @@ func Start() {
 	router.POST("/login", httpserver.Login)
 	router.GET("/user-session-check", httpserver.UserSessionCheck)
 	router.GET("/chat/:userFromId/:userToId", httpserver.GetMessagesHandler)
-	router.GET("/search/", httpserver.SearchUser)
+	router.GET("/search-user", httpserver.SearchUser)
 	router.POST("/add-contact", httpserver.AddContact)
 	router.GET("/contacts", httpserver.GetContacts)
 
