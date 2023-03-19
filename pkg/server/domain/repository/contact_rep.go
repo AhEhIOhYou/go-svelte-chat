@@ -7,6 +7,6 @@ import (
 type ContactRepository interface {
 	CreateContact(*entities.Contact) (*entities.Contact, error)
 	GetListOfContactsByUserID(string) ([]*entities.Contact, error)
-	DeleteContact(string) error
+	DeleteContact(string, string) error
 	DeleteContactsByUserID(string) error
 }

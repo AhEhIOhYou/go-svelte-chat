@@ -26,7 +26,7 @@ func NewMessageRepo(collection *mongo.Collection) *MessageRepo {
 	}
 }
 
-func (r *MessageRepo) CreateMessage(message *entities.Message) (*entities.Message, error) {
+func (r *MessageRepo) StoreMessage(message *entities.Message) (*entities.Message, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 
 	createRes, regErr := r.collection.InsertOne(ctx, bson.M{
@@ -77,6 +77,23 @@ func (r *MessageRepo) GetMessagesByChatID(chatID string, limit int64, offset int
 	}
 
 	return messages, nil
+}
+
+func (r *MessageRepo) GetMessageByID(messageID string) (*entities.Message, error) {
+	var message entities.Message
+
+	userDocID, err := primitive.ObjectIDFromHex(messageID)
+	if err != nil {
+		return nil, fmt.Errorf(constants.DatabaseError, err)
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+
+	_ = r.collection.FindOne(ctx, bson.M{"_id": userDocID}).Decode(&message)
+
+	defer cancel()
+
+	return &message, nil
 }
 
 func (r *MessageRepo) UpdateMessage(message *entities.Message) (*entities.Message, error) {

@@ -14,7 +14,7 @@ var _ ContactAppInterface = &ContactApp{}
 type ContactAppInterface interface {
 	CreateContact(*entities.Contact) (*entities.Contact, error)
 	GetListOfContactsByUserID(string) ([]*entities.Contact, error)
-	DeleteContact(string) error
+	DeleteContact(string, string) error
 	DeleteContactsByUserID(string) error
 }
 
@@ -26,8 +26,8 @@ func (c *ContactApp) GetListOfContactsByUserID(userID string) ([]*entities.Conta
 	return c.contactRep.GetListOfContactsByUserID(userID)
 }
 
-func (c *ContactApp) DeleteContact(contactID string) error {
-	return c.contactRep.DeleteContact(contactID)
+func (c *ContactApp) DeleteContact(userID, contactID string) error {
+	return c.contactRep.DeleteContact(userID, contactID)
 }
 
 func (c *ContactApp) DeleteContactsByUserID(userID string) error {

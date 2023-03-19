@@ -36,5 +36,5 @@ func Start() {
 
 	log.Println("Server started")
 
-	log.Fatal(router.Run(":8080"))
+	log.Fatal(router.Run(":8081"))
 }

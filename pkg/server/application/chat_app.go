@@ -13,6 +13,7 @@ var _ ChatAppInterface = &ChatApp{}
 
 type ChatAppInterface interface {
 	CreateChat(*entities.Chat) (*entities.Chat, error)
+	CheckChatExistsByParticipantsID([]string) (*entities.Chat, error)
 	GetChatByID(string) (*entities.Chat, error)
 	GetChatsByParticipantID(string) ([]*entities.Chat, error)
 	UpdateChat(*entities.Chat) (*entities.Chat, error)
@@ -23,6 +24,10 @@ type ChatAppInterface interface {
 
 func (c *ChatApp) CreateChat(chat *entities.Chat) (*entities.Chat, error) {
 	return c.chatRep.CreateChat(chat)
+}
+
+func (c *ChatApp) CheckChatExistsByParticipantsID(participantsID []string) (*entities.Chat, error) {
+	return c.chatRep.CheckChatExistsByParticipantsID(participantsID)
 }
 
 func (c *ChatApp) GetChatByID(chatID string) (*entities.Chat, error) {

@@ -8,9 +8,10 @@ const (
 	DatabaseError = "database error: %v"
 
 	//Error messages
-	Failed = "request failed"
+	Failed = "request failed: %v"
 
 	//User errors
+	UserIDInvalid = "user id invalid"
 	UsernameCantBeEmpty = "username can't be empty"
 	UsernameInvalid = "username is invalid"
 	UsernameIsAlreadyTaken = "username is already taken"
@@ -25,24 +26,36 @@ const (
 	ChatNameCantBeEmpty = "chat name can't be empty"
 	ChatMustHaveAtLeastTwoParticipants = "chat must have at least 2 participants"
 	ChatDoesNotExist = "chat does not exist"
+	ChatAlreadyExists = "chat already exists"
 
 	//Message errors
 	MessageCantBeEmpty = "message can't be empty"
 	FromUserIDCantBeEmpty = "from user id can't be empty"
 	ChatIDCantBeEmpty = "chat id can't be empty"
 	MessageDoesNotExist = "message does not exist"
+	MessageCannotBeDeleted = "message cannot be deleted"
+	MessageCannotBeEdited = "message cannot be edited"
 
 	//Contact errors
 	UserIDCantBeEmpty = "user id can't be empty"
 	ContactIDCantBeEmpty = "contact id can't be empty"
 	ContactDoesNotExist = "contact does not exist"
 
+	//Security errors
+	PasswordHashError = "error hashing password: %v"
+	PasswordVerifyError = "error verifying password: %v"
+
 
 	//Success messages
-	Successful = "Request successful"
+	Successful = "request successful"
+
 	UsernameIsAvailable = "Username is available"
 	RegistrationSuccessful = "Registration successful"
 	LoginSuccessful = "Login successful"
 	YouAreLoggedIn = "You are logged in"
 	ContactAdded = "Contact added"
+
+	//Statuses
+	UserOffline = 0
+	UserOnline = 1
 )

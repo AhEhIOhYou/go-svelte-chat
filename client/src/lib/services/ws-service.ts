@@ -1,4 +1,4 @@
-const WS_ENDPOINT = 'ws://localhost:8080';
+const WS_ENDPOINT = 'ws://localhost:8081';
 
 let wsConnection = null;
 

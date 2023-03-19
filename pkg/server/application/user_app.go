@@ -16,8 +16,10 @@ type UserAppInterface interface {
 	GetUserByID(string) (*entities.User, error)
 	GetUserByUsername(string) (*entities.User, error)
 	GetUserByCredentials(string, string) (*entities.User, error)
+	SearchByUsername(string) ([]*entities.User, error)
 	UpdateUser(*entities.User) (*entities.User, error)
 	DeleteUser(string) error
+	UpdateUserOnlineStatus(string, int) error
 }
 
 func (u *UserApp) CreateUser(user *entities.User) (string, error) {
@@ -36,10 +38,18 @@ func (u *UserApp) GetUserByCredentials(username, password string) (*entities.Use
 	return u.userRep.GetUserByCredentials(username, password)
 }
 
+func (u *UserApp) SearchByUsername(username string) ([]*entities.User, error) {
+	return u.userRep.SearchByUsername(username)
+}
+
 func (u *UserApp) UpdateUser(user *entities.User) (*entities.User, error) {
 	return u.userRep.UpdateUser(user)
 }
 
 func (u *UserApp) DeleteUser(id string) error {
 	return u.userRep.DeleteUser(id)
+}
+
+func (u *UserApp) UpdateUserOnlineStatus(id string, status int) error {
+	return u.userRep.UpdateUserOnlineStatus(id, status)
 }

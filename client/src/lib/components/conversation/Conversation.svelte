@@ -107,6 +107,7 @@
 				flex: 1;
 				display: flex;
 				flex-direction: row;
+				word-break: break-all;
 
 				.message__bubble {
 					border-radius: 15px;

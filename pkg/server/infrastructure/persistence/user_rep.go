@@ -83,6 +83,29 @@ func (r *UserRepo) GetUserByCredentials(username string, password string) (*enti
 	return &user, nil
 }
 
+func (r *UserRepo) SearchByUsername(username string) ([]*entities.User, error) {
+	var users []*entities.User
+
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+
+	defer cancel()
+
+	cursor, err := r.collection.Find(ctx, bson.M{"username": bson.M{"$regex": username}})
+	if err != nil {
+		return nil, fmt.Errorf(constants.DatabaseError, err)
+	}
+
+	defer cursor.Close(ctx)
+
+	for cursor.Next(ctx) {
+		var user entities.User
+		cursor.Decode(&user)
+		users = append(users, &user)
+	}
+
+	return users, nil
+}
+
 func (r *UserRepo) UpdateUser(user *entities.User) (*entities.User, error) {
 	var userUp entities.User = *user
 
@@ -121,6 +144,24 @@ func (r *UserRepo) DeleteUser(userID string) error {
 	}
 
 	_, queryError := r.collection.DeleteOne(ctx, bson.M{"_id": userDocID})
+
+	if queryError != nil {
+		return fmt.Errorf(constants.DatabaseError, queryError)
+	}
+
+	return nil
+}
+
+func (r *UserRepo) UpdateUserOnlineStatus(userID, status string) error {
+	docID, err := primitive.ObjectIDFromHex(userID)
+	if err != nil {
+		return fmt.Errorf(constants.DatabaseError, err)
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	_, queryError := r.collection.UpdateOne(ctx, bson.M{"_id": docID}, bson.M{"$set": bson.M{"online": status}})
 
 	if queryError != nil {
 		return fmt.Errorf(constants.DatabaseError, queryError)

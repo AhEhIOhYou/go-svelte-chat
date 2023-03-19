@@ -1,4 +1,4 @@
-const API_ENDPOINTS = 'http://localhost:8080';
+const API_ENDPOINTS = 'http://localhost:8081';
 
 export async function loginHTTPRequest(username, password) {
 	const response = await fetch(`${API_ENDPOINTS}/login`, {

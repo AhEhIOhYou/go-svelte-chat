@@ -6,6 +6,7 @@ import (
 
 type ChatRepository interface {
 	CreateChat(*entities.Chat) (*entities.Chat, error)
+	CheckChatExistsByParticipantsID([]string) (*entities.Chat, error)
 	GetChatByID(string) (*entities.Chat, error)
 	GetChatsByParticipantID(string) ([]*entities.Chat, error)
 	UpdateChat(*entities.Chat) (*entities.Chat, error)

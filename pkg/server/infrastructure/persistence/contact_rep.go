@@ -45,16 +45,21 @@ func (r *ContactRepo) CreateContact(contact *entities.Contact) (*entities.Contac
 	return contact, nil
 }
 
-func (r *ContactRepo) DeleteContact(contactID string) error {
+func (r *ContactRepo) DeleteContact(userID, contactID string) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
+
+	userDocID, err := primitive.ObjectIDFromHex(userID)
+	if err != nil {
+		return fmt.Errorf(constants.DatabaseError, err)
+	}
 
 	contactDocID, err := primitive.ObjectIDFromHex(contactID)
 	if err != nil {
 		return fmt.Errorf(constants.DatabaseError, err)
 	}
 
-	_, queryError := r.collection.DeleteOne(ctx, bson.M{"_id": contactDocID})
+	_, queryError := r.collection.DeleteOne(ctx, bson.M{"user_id": userDocID, "contact": contactDocID})
 
 	if queryError != nil {
 		return fmt.Errorf(constants.DatabaseError, queryError)

@@ -44,6 +44,34 @@ func (r *ChatRepo) CreateChat(chat *entities.Chat) (*entities.Chat, error) {
 	return chat, nil
 }
 
+func (r *ChatRepo) CheckChatExistsByParticipantsID(participantsID []string) (*entities.Chat, error) {
+	var chat entities.Chat
+
+	participantsDocID := make([]primitive.ObjectID, len(participantsID))
+
+	for i, id := range participantsID {
+		participantDocID, err := primitive.ObjectIDFromHex(id)
+		if err != nil {
+			return nil, fmt.Errorf(constants.DatabaseError, err)
+		}
+
+		participantsDocID[i] = participantDocID
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+
+	_ = r.collection.FindOne(ctx, bson.M{
+		"participants": bson.M{
+			"$all": participantsDocID,
+		},
+		"$size": len(participantsDocID),
+	}).Decode(&chat)
+
+	defer cancel()
+
+	return &chat, nil
+}
+
 func (r *ChatRepo) GetChatByID(chatID string) (*entities.Chat, error) {
 	var chat entities.Chat
 
