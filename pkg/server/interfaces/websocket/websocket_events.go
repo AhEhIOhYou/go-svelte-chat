@@ -2,7 +2,7 @@ package websocket
 
 import (
 	"log"
-	"project-eighteen/pkg/constants"
+	"project-eighteen/pkg/server/constants"
 	"project-eighteen/pkg/server/domain/entities"
 )
 

@@ -2,14 +2,14 @@ package entities
 
 import (
 	"errors"
-	"project-eighteen/pkg/constants"
+	"project-eighteen/pkg/server/constants"
 )
 
 type Message struct {
 	ID        string `json:"id" bson:"_id,omitempty"`
 	ChatID    string `json:"chatID"`
 	ChatName  string `json:"chatName"`
-	FromID      string `json:"fromUserID"`
+	FromID    string `json:"fromUserID"`
 	FromName  string `json:"fromUserName"`
 	Message   string `json:"message"`
 	CreatedAt string `json:"createdAt"`

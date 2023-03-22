@@ -2,7 +2,7 @@ package security
 
 import (
 	"fmt"
-	"project-eighteen/pkg/constants"
+	"project-eighteen/pkg/server/constants"
 
 	"golang.org/x/crypto/bcrypt"
 )

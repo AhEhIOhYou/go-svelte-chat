@@ -2,25 +2,25 @@ package entities
 
 import (
 	"errors"
-	"project-eighteen/pkg/constants"
+	"project-eighteen/pkg/server/constants"
 )
 
 type Contact struct {
-	ID string `json:"id" bson:"_id,omitempty"`
-	UserID string `json:"userID"`
+	ID        string `json:"id" bson:"_id,omitempty"`
+	UserID    string `json:"userID"`
 	ContactID string `json:"contactUserID"`
 }
 
 type ContactRequest struct {
-	UserID string `json:"userID"`
+	UserID    string `json:"userID"`
 	ContactID string `json:"contactUserID"`
 }
 
 type ContactResponse struct {
-	UserID string `json:"userID"`
-	ContactID string `json:"contactUserID"`
+	UserID          string `json:"userID"`
+	ContactID       string `json:"contactUserID"`
 	ContactUsername string `json:"contactUsername"`
-	Online string `json:"online"`
+	Online          string `json:"online"`
 }
 
 func (contact *Contact) Validate() error {

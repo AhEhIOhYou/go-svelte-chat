@@ -2,7 +2,7 @@ package entities
 
 import (
 	"errors"
-	"project-eighteen/pkg/constants"
+	"project-eighteen/pkg/server/constants"
 )
 
 type Chat struct {

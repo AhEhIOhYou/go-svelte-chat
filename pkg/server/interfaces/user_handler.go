@@ -3,7 +3,7 @@ package interfaces
 import (
 	"fmt"
 	"net/http"
-	"project-eighteen/pkg/constants"
+	"project-eighteen/pkg/server/constants"
 	"project-eighteen/pkg/server/application"
 	"project-eighteen/pkg/server/domain/entities"
 	"project-eighteen/pkg/server/infrastructure/security"

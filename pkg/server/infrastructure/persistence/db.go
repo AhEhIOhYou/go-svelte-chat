@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"project-eighteen/pkg/constants"
+	"project-eighteen/pkg/server/constants"
 	"project-eighteen/pkg/server/domain/repository"
 
 	"go.mongodb.org/mongo-driver/mongo"

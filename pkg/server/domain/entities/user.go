@@ -2,7 +2,7 @@ package entities
 
 import (
 	"errors"
-	"project-eighteen/pkg/constants"
+	"project-eighteen/pkg/server/constants"
 )
 
 type User struct {
@@ -21,7 +21,7 @@ type UserDetailsRequest struct {
 type UserDetailsResponse struct {
 	UserID   string `json:"userId"`
 	Username string `json:"username"`
-	Online   int `json:"online"`
+	Online   int    `json:"online"`
 }
 
 type Users []User

@@ -3,7 +3,7 @@ package persistence
 import (
 	"context"
 	"fmt"
-	"project-eighteen/pkg/constants"
+	"project-eighteen/pkg/server/constants"
 	"project-eighteen/pkg/server/domain/entities"
 	"project-eighteen/pkg/server/domain/repository"
 	"time"
