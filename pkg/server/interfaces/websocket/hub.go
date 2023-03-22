@@ -15,11 +15,11 @@ type HubType struct {
 	unregister chan *ClientType
 	userApp    application.UserAppInterface
 	chatApp    application.ChatAppInterface
-	contactApp application.ContactApp
-	messageApp application.MessageApp
+	contactApp application.ContactAppInterface
+	messageApp application.MessageAppInterface
 }
 
-func NewHub(userApp application.UserAppInterface, chatApp application.ChatAppInterface, contactApp application.ContactApp, messageApp application.MessageApp) *HubType {
+func NewHub(userApp application.UserAppInterface, chatApp application.ChatAppInterface, contactApp application.ContactAppInterface, messageApp application.MessageAppInterface) *HubType {
 	return &HubType{
 		register:   make(chan *ClientType),
 		unregister: make(chan *ClientType),
@@ -60,5 +60,5 @@ func (h *HubType) ServeWs(ctx *gin.Context) {
 		return
 	}
 
-	CreateNewSocketUser(h, wsConn, userId)
+	NewClient(h, wsConn, userId)
 }

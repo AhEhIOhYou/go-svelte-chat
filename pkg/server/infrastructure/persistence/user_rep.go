@@ -152,7 +152,7 @@ func (r *UserRepo) DeleteUser(userID string) error {
 	return nil
 }
 
-func (r *UserRepo) UpdateUserOnlineStatus(userID, status string) error {
+func (r *UserRepo) UpdateUserOnlineStatus(userID string, status int) error {
 	docID, err := primitive.ObjectIDFromHex(userID)
 	if err != nil {
 		return fmt.Errorf(constants.DatabaseError, err)

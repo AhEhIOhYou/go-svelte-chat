@@ -9,7 +9,8 @@ type Message struct {
 	ID        string `json:"id" bson:"_id,omitempty"`
 	ChatID    string `json:"chatID"`
 	ChatName  string `json:"chatName"`
-	From      string `json:"fromUserID"`
+	FromID      string `json:"fromUserID"`
+	FromName  string `json:"fromUserName"`
 	Message   string `json:"message"`
 	CreatedAt string `json:"createdAt"`
 }
@@ -27,7 +28,7 @@ func (message *Message) Validate() error {
 	if message.ChatID == "" {
 		return errors.New(constants.ChatIDCantBeEmpty)
 	}
-	if message.From == "" {
+	if message.FromID == "" {
 		return errors.New(constants.FromUserIDCantBeEmpty)
 	}
 

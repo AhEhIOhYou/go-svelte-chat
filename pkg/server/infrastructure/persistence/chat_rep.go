@@ -28,6 +28,7 @@ func (r *ChatRepo) CreateChat(chat *entities.Chat) (*entities.Chat, error) {
 
 	createRes, regErr := r.collection.InsertOne(ctx, bson.M{
 		"participants": chat.ParticipantsID,
+		"type":         chat.Type,
 		"name":         chat.Name,
 	})
 
@@ -44,7 +45,7 @@ func (r *ChatRepo) CreateChat(chat *entities.Chat) (*entities.Chat, error) {
 	return chat, nil
 }
 
-func (r *ChatRepo) CheckChatExistsByParticipantsID(participantsID []string) (*entities.Chat, error) {
+func (r *ChatRepo) CheckExsistDialog(participantsID []string) (*entities.Chat, error) {
 	var chat entities.Chat
 
 	participantsDocID := make([]primitive.ObjectID, len(participantsID))
@@ -61,10 +62,11 @@ func (r *ChatRepo) CheckChatExistsByParticipantsID(participantsID []string) (*en
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 
 	_ = r.collection.FindOne(ctx, bson.M{
+		"type": constants.ChatTypeDialog,
 		"participants": bson.M{
-			"$all": participantsDocID,
+			"$all":  participantsDocID,
+			"$size": len(participantsDocID),
 		},
-		"$size": len(participantsDocID),
 	}).Decode(&chat)
 
 	defer cancel()

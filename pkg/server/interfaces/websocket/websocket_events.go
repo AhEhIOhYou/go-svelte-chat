@@ -56,7 +56,6 @@ func userDisconnect(c *ClientType, socketEvent entities.SocketEventType) {
 				"user": map[string]interface{}{
 					"userID":   userDetails.ID,
 					"username": userDetails.Username,
-					"online":   constants.UserOffline,
 				},
 			},
 		}
@@ -69,23 +68,32 @@ func userDisconnect(c *ClientType, socketEvent entities.SocketEventType) {
 func messageStore(c *ClientType, socketEvent entities.SocketEventType) {
 	message := socketEvent.Payload.(entities.Message)
 
-	// 1. Сохранить сообщение в БД
-	messageID, err := c.hub.messageApp.StoreMessage(&message)
-	if err != nil {
-		log.Println("Failed to store message: ", err)
-		return
+	if (message == entities.Message{}) {
+		log.Println("Invalid message")
+	} else {
+		// 1. Сохранить сообщение в БД
+		messageID, err := c.hub.messageApp.StoreMessage(&message)
+		if err != nil {
+			log.Println("Failed to store message: ", err)
+			return
+		}
+		log.Println("Message from user with id: ", message.FromID, " to chat with id: ", message.ChatID, " stored")
+
+		// 2. Создать событие о том, что пользователь отправил сообщение
+		messageEvent := entities.SocketEventType{
+			Name: "message",
+			Payload: map[string]interface{}{
+				"messageID": messageID,
+				"fromID":  message.FromID,
+				"fromName": message.FromName,
+				"chatID":  message.ChatID,
+				"chatName": message.ChatName,
+				"message": message.Message,
+				"createdAt": message.CreatedAt,
+			},
+		}
+
+		// 3. Отправить событие о том, что пользователь отправил сообщение всем участникам чата
+		BroadcastToChat(c.hub, messageEvent, message.ChatID)
 	}
-
-	// 2. Создать событие о том, что пользователь отправил сообщение
-	messageEvent := entities.SocketEventType{
-		Name: "message",
-		Payload: map[string]interface{}{
-			"messageID": messageID,
-			"from":  message.From,
-
-
-	
-
-
-
 }

@@ -42,20 +42,22 @@ func (c *Chat) CreateChat(ctx *gin.Context) {
 		return
 	}
 
-	chatExists, err := c.chatApp.CheckChatExistsByParticipantsID(chat.ParticipantsID)
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{
-			"message": fmt.Sprintf(constants.Failed, err),
-		})
-		return
-	}
+	if len(chat.ParticipantsID) == 2 {
+		chatExists, err := c.chatApp.CheckExsistDialog(chat.ParticipantsID)
+		if err != nil {
+			ctx.JSON(http.StatusBadRequest, gin.H{
+				"message": fmt.Sprintf(constants.Failed, err),
+			})
+			return
+		}
 
-	if chatExists.ID != "" {
-		ctx.JSON(http.StatusOK, gin.H{
-			"message": constants.ChatAlreadyExists,
-			"chat":    chatExists,
-		})
-		return
+		if chatExists.ID != "" {
+			ctx.JSON(http.StatusOK, gin.H{
+				"message": constants.ChatAlreadyExists,
+				"chat":    chatExists,
+			})
+			return
+		}
 	}
 
 	newChat, err := c.chatApp.CreateChat(&chat)

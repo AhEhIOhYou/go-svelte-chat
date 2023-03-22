@@ -7,6 +7,7 @@ import (
 
 type Chat struct {
 	ID             string   `json:"id" bson:"_id,omitempty"`
+	Type           int      `json:"type"`
 	ParticipantsID []string `json:"participantsID"`
 	Name           string   `json:"name"`
 }

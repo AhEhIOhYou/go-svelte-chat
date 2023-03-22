@@ -55,7 +55,11 @@ const (
 	YouAreLoggedIn = "You are logged in"
 	ContactAdded = "Contact added"
 
-	//Statuses
+	//User Statuses
 	UserOffline = 0
 	UserOnline = 1
+	
+	//Chat Types
+	ChatTypeDialog = 0
+	ChatTypeGroup = 1
 )

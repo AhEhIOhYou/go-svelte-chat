@@ -31,7 +31,9 @@ func (r *MessageRepo) StoreMessage(message *entities.Message) (*entities.Message
 
 	createRes, regErr := r.collection.InsertOne(ctx, bson.M{
 		"chat_id":    message.ChatID,
-		"from_id":    message.From,
+		"chat_name":  message.ChatName,
+		"from_id":    message.FromID,
+		"from_name":  message.FromName,
 		"message":    message.Message,
 		"created_at": message.CreatedAt,
 	})
