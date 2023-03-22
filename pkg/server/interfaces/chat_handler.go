@@ -74,7 +74,7 @@ func (c *Chat) CreateChat(ctx *gin.Context) {
 	})
 }
 
-func (c *Chat) GetChatsByUser(ctx gin.Context) {
+func (c *Chat) GetChatsByUser(ctx *gin.Context) {
 	userID := ctx.Param("userID")
 	if !utils.CheckAlphaNumeric(userID) {
 		ctx.JSON(http.StatusBadRequest, gin.H{
@@ -96,7 +96,7 @@ func (c *Chat) GetChatsByUser(ctx gin.Context) {
 	})
 }
 
-func (c *Chat) GetChatData(ctx gin.Context) {
+func (c *Chat) GetChatData(ctx *gin.Context) {
 	chatId := ctx.Param("chatID")
 	if !utils.CheckAlphaNumeric(chatId) {
 		ctx.JSON(http.StatusBadRequest, gin.H{

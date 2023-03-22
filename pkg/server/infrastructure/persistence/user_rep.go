@@ -114,12 +114,12 @@ func (r *UserRepo) UpdateUser(user *entities.User) (*entities.User, error) {
 		return nil, fmt.Errorf(constants.DatabaseError, err)
 	}
 
-	var status string
+	var status int
 
-	if user.Online == "Y" {
-		status = "N"
+	if user.Online == constants.UserOnline {
+		status = constants.UserOffline
 	} else {
-		status = "Y"
+		status = constants.UserOnline
 	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)

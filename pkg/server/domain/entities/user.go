@@ -7,10 +7,10 @@ import (
 
 type User struct {
 	ID       string `json:"id" bson:"_id,omitempty"`
-	Username string
-	Password string
-	Online   string
-	SocketID string
+	Username string `json:"username" bson:"username"`
+	Password string `json:"password" bson:"password"`
+	Online   int    `json:"online" bson:"online"`
+	SocketID string `json:"socketId" bson:"socketId"`
 }
 
 type UserDetailsRequest struct {
@@ -21,7 +21,7 @@ type UserDetailsRequest struct {
 type UserDetailsResponse struct {
 	UserID   string `json:"userId"`
 	Username string `json:"username"`
-	Online   string `json:"online"`
+	Online   int `json:"online"`
 }
 
 type Users []User
