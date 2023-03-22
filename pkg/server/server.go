@@ -3,10 +3,9 @@ package server
 import (
 	"log"
 	"os"
-
-	"project-eighteen/pkg/server/httpserver/middleware"
 	"project-eighteen/pkg/server/infrastructure/persistence"
 	"project-eighteen/pkg/server/interfaces"
+	"project-eighteen/pkg/server/interfaces/middleware"
 	"project-eighteen/pkg/server/interfaces/websocket"
 
 	"github.com/gin-gonic/gin"
@@ -34,10 +33,8 @@ func Start() {
 	hub := websocket.NewHub(services.UserRepository, services.ChatRepository, services.ContactRepository, services.MessageRepository)
 	go hub.Run()
 
-	// websocket routes
 	router.GET("/ws", hub.ServeWs)
 
-	// users routes
 	u := router.Group("api/users")
 	{
 		u.POST("/register", users.Register)
@@ -47,7 +44,6 @@ func Start() {
 		u.GET("/logout", users.Logout)
 	}
 
-	// chat routes
 	ch := router.Group("api/chats")
 	{
 		ch.POST("/create", chat.CreateChat)
@@ -55,7 +51,6 @@ func Start() {
 		ch.GET("/chat-data", chat.GetChatData)
 	}
 
-	// contacts routes
 	con := router.Group("api/contacts")
 	{
 		con.POST("/add", contacts.AddContact)
@@ -74,5 +69,5 @@ func Start() {
 
 	router.GET("/ping", index)
 
-	router.Run(":8081")
+	router.RunTLS(":8081", os.Getenv("CRT"), os.Getenv("KEY"))
 }
