@@ -39,8 +39,8 @@ func Start() {
 	{
 		u.POST("/register", users.Register)
 		u.POST("/login", users.Login)
-		u.GET("is-username-available", users.IsUsernameAvailable)
-		u.GET("search", users.SearchUser)
+		u.GET("/is-username-available", users.IsUsernameAvailable)
+		u.GET("/search", users.SearchUser)
 		u.GET("/logout", users.Logout)
 	}
 
