@@ -3,8 +3,8 @@ package interfaces
 import (
 	"fmt"
 	"net/http"
-	"project-eighteen/pkg/server/constants"
 	"project-eighteen/pkg/server/application"
+	"project-eighteen/pkg/server/constants"
 	"project-eighteen/pkg/server/domain/entities"
 	"project-eighteen/pkg/server/infrastructure/security"
 	"project-eighteen/pkg/server/infrastructure/utils"
@@ -21,7 +21,7 @@ func NewUsersHandler(userApp application.UserAppInterface) *Users {
 }
 
 func (u *Users) Register(ctx *gin.Context) {
-	var user entities.User
+	var user entities.UserDetailsRequest
 
 	err := ctx.BindJSON(&user)
 	if err != nil {
@@ -96,8 +96,9 @@ func (u *Users) Login(ctx *gin.Context) {
 	u.userApp.UpdateUserOnlineStatus(userDetails.ID, 1)
 
 	ctx.JSON(http.StatusOK, gin.H{
-		"message": &entities.UserDetailsResponse{
-			UserID:   userDetails.ID,
+		"message": constants.Successful,
+		"user": &entities.UserDetailsResponse{
+			ID:   userDetails.ID,
 			Username: userDetails.Username,
 			Online:   userDetails.Online,
 		},
@@ -157,6 +158,8 @@ func (u *Users) SearchUser(ctx *gin.Context) {
 		return
 	}
 
+	// TODO: check if user is contact
+
 	ctx.JSON(http.StatusOK, gin.H{
 		"message": constants.Successful,
 		"users":   users,
@@ -170,5 +173,22 @@ func (u *Users) Logout(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, gin.H{
 		"message": constants.Successful,
+	})
+}
+
+func (u *Users) GetByID(ctx *gin.Context) {
+	userID := ctx.Param("user-id")
+
+	user, err := u.userApp.GetUserByID(userID)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"message": fmt.Sprintf(constants.Failed, err),
+		})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"message": constants.Successful,
+		"user":    user,
 	})
 }

@@ -12,17 +12,17 @@ type UserApp struct {
 var _ UserAppInterface = &UserApp{}
 
 type UserAppInterface interface {
-	CreateUser(*entities.User) (string, error)
+	CreateUser(*entities.UserDetailsRequest) (string, error)
 	GetUserByID(string) (*entities.User, error)
 	GetUserByUsername(string) (*entities.User, error)
 	GetUserByCredentials(string, string) (*entities.User, error)
-	SearchByUsername(string) ([]*entities.User, error)
+	SearchByUsername(string) ([]*entities.UserDetailsResponse, error)
 	UpdateUser(*entities.User) (*entities.User, error)
 	DeleteUser(string) error
 	UpdateUserOnlineStatus(string, int) error
 }
 
-func (u *UserApp) CreateUser(user *entities.User) (string, error) {
+func (u *UserApp) CreateUser(user *entities.UserDetailsRequest) (string, error) {
 	return u.userRep.CreateUser(user)
 }
 
@@ -38,7 +38,7 @@ func (u *UserApp) GetUserByCredentials(username, password string) (*entities.Use
 	return u.userRep.GetUserByCredentials(username, password)
 }
 
-func (u *UserApp) SearchByUsername(username string) ([]*entities.User, error) {
+func (u *UserApp) SearchByUsername(username string) ([]*entities.UserDetailsResponse, error) {
 	return u.userRep.SearchByUsername(username)
 }
 

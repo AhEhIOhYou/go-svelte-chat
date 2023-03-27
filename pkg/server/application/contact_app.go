@@ -13,6 +13,7 @@ var _ ContactAppInterface = &ContactApp{}
 
 type ContactAppInterface interface {
 	CreateContact(*entities.Contact) (*entities.Contact, error)
+	IsContact(string, string) (bool, error)
 	GetListOfContactsByUserID(string) ([]*entities.Contact, error)
 	DeleteContact(string, string) error
 	DeleteContactsByUserID(string) error
@@ -20,6 +21,10 @@ type ContactAppInterface interface {
 
 func (c *ContactApp) CreateContact(contact *entities.Contact) (*entities.Contact, error) {
 	return c.contactRep.CreateContact(contact)
+}
+
+func (c *ContactApp) IsContact(userID, contactID string) (bool, error) {
+	return c.contactRep.IsContact(userID, contactID)
 }
 
 func (c *ContactApp) GetListOfContactsByUserID(userID string) ([]*entities.Contact, error) {

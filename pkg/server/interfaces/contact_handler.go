@@ -54,7 +54,7 @@ func (c *Contacts) AddContact(ctx *gin.Context) {
 }
 
 func (c *Contacts) GetContacts(ctx *gin.Context) {
-	userID := ctx.Param("userID")
+	userID := ctx.Param("user-id")
 	if !utils.CheckAlphaNumeric(userID) {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"message": fmt.Sprintf(constants.Failed, constants.AccountDoesNotExist),

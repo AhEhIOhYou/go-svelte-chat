@@ -23,13 +23,13 @@ func NewUserRepo(collection *mongo.Collection) *UserRepo {
 	return &UserRepo{collection: collection}
 }
 
-func (r *UserRepo) CreateUser(user *entities.User) (string, error) {
+func (r *UserRepo) CreateUser(user *entities.UserDetailsRequest) (string, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 
 	regRes, regErr := r.collection.InsertOne(ctx, bson.M{
 		"username": user.Username,
 		"password": user.Password,
-		"online":   "N",
+		"online":   constants.UserOffline,
 	})
 	defer cancel()
 
@@ -83,8 +83,8 @@ func (r *UserRepo) GetUserByCredentials(username string, password string) (*enti
 	return &user, nil
 }
 
-func (r *UserRepo) SearchByUsername(username string) ([]*entities.User, error) {
-	var users []*entities.User
+func (r *UserRepo) SearchByUsername(username string) ([]*entities.UserDetailsResponse, error) {
+	var users []*entities.UserDetailsResponse
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 
@@ -98,7 +98,7 @@ func (r *UserRepo) SearchByUsername(username string) ([]*entities.User, error) {
 	defer cursor.Close(ctx)
 
 	for cursor.Next(ctx) {
-		var user entities.User
+		var user entities.UserDetailsResponse
 		cursor.Decode(&user)
 		users = append(users, &user)
 	}

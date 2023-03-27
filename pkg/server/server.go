@@ -42,6 +42,7 @@ func Start() {
 		u.GET("/is-username-available", users.IsUsernameAvailable)
 		u.GET("/search", users.SearchUser)
 		u.GET("/logout", users.Logout)
+		u.GET("/:user-id", users.GetByID)
 	}
 
 	ch := router.Group("api/chats")
@@ -54,7 +55,7 @@ func Start() {
 	con := router.Group("api/contacts")
 	{
 		con.POST("/add", contacts.AddContact)
-		con.GET("/contacts-by-user", contacts.GetContacts)
+		con.GET("/:user-id", contacts.GetContacts)
 		con.DELETE("/delete", contacts.DeleteContact)
 		con.DELETE("/delete-all", contacts.ClearAllUserContacts)
 	}

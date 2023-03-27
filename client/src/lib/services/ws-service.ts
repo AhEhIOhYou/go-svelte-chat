@@ -1,4 +1,4 @@
-const WS_ENDPOINT = 'ws://localhost:8081';
+const WS_ENDPOINT = 'wss://localhost:8081';
 
 let wsConnection = null;
 
@@ -27,8 +27,8 @@ export function sendWebSocketMessage(messagePayload) {
 	}
 	wsConnection.send(
 		JSON.stringify({
-			eventName: 'message',
-			eventPayload: messagePayload
+			Name: 'message',
+			Payload: messagePayload
 		})
 	);
 }
@@ -53,25 +53,18 @@ export function listenToWebSocketMessages(callback) {
 	wsConnection.onmessage = (event) => {
 		try {
 			const socketPayload = JSON.parse(event.data);
-			switch (socketPayload.eventName) {
-				case 'chatlist-res':
-					if (!socketPayload.eventPayload) {
+			switch (socketPayload.Name) {
+				case 'user-update':
+					if (!socketPayload.Payload) {
 						return
 					}
-					callback(socketPayload.eventPayload);
+					callback(socketPayload.Payload);
 					break;
-				case 'disconnect':
-					if (!socketPayload.eventPayload) {
+				case 'message':
+					if (!socketPayload.Payload) {
 						return
 					}
-					callback(socketPayload.eventPayload);
-					break;
-				case 'message-res':
-					if (!socketPayload.eventPayload) {
-						return
-					}
-					socketPayload.eventPayload.type = 'new-message';
-					callback(socketPayload.eventPayload);
+					callback(socketPayload.Payload);
 					break;
 				default:
 					break;

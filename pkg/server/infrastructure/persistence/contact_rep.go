@@ -110,3 +110,28 @@ func (r *ContactRepo) GetListOfContactsByUserID(userID string) ([]*entities.Cont
 
 	return contacts, nil
 }
+
+func (r *ContactRepo) IsContact(userID, contactID string) (bool, error) {
+	userDocID, err := primitive.ObjectIDFromHex(userID)
+	if err != nil {
+		return false, fmt.Errorf(constants.DatabaseError, err)
+	}
+
+	contactDocID, err := primitive.ObjectIDFromHex(contactID)
+	if err != nil {
+		return false, fmt.Errorf(constants.DatabaseError, err)
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	var contact entities.Contact
+
+	queryError := r.collection.FindOne(ctx, bson.M{"user_id": userDocID, "contact": contactDocID}).Decode(&contact)
+
+	if queryError != nil {
+		return false, fmt.Errorf(constants.DatabaseError, queryError)
+	}
+
+	return true, nil
+}

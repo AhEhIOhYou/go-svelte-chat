@@ -19,7 +19,7 @@ type UserDetailsRequest struct {
 }
 
 type UserDetailsResponse struct {
-	UserID   string `json:"userId"`
+	ID       string `json:"id" bson:"_id,omitempty"`
 	Username string `json:"username"`
 	Online   int    `json:"online"`
 }
@@ -34,9 +34,9 @@ func (users Users) PublicUsers() []interface{} {
 	return res
 }
 
-func (user *User) PublicUser() interface{} {
-	return &UserDetailsResponse{
-		UserID:   user.ID,
+func (user *User) PublicUser() UserDetailsResponse {
+	return UserDetailsResponse{
+		ID:   user.ID,
 		Username: user.Username,
 		Online:   user.Online,
 	}
