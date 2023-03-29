@@ -70,7 +70,7 @@ export async function searchUserByUserName(username) {
 }
 
 export async function addToContacts(userID, contactID) {
-	const response = await fetch(`${API_ENDPOINTS}/contacts/add/`, {
+	const response = await fetch(`${API_ENDPOINTS}/contacts/add`, {
 		method: 'POST',
 		headers: {
 			'Content-Type': 'application/json'
@@ -84,7 +84,7 @@ export async function addToContacts(userID, contactID) {
 }
 
 export async function deleteContact(userID, contactID) {
-	const response = await fetch(`${API_ENDPOINTS}/contacts/delete/`, {
+	const response = await fetch(`${API_ENDPOINTS}/contacts/delete`, {
 		method: 'DELETE',
 		headers: {
 			'Content-Type': 'application/json'

@@ -3,14 +3,13 @@ package persistence
 import (
 	"context"
 	"fmt"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo"
 	"project-eighteen/pkg/server/constants"
 	"project-eighteen/pkg/server/domain/entities"
 	"project-eighteen/pkg/server/domain/repository"
 	"time"
-
-	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/bson/primitive"
-	"go.mongodb.org/mongo-driver/mongo"
 )
 
 type ContactRepo struct {
@@ -26,11 +25,22 @@ func NewContactRepo(collection *mongo.Collection) *ContactRepo {
 }
 
 func (r *ContactRepo) CreateContact(contact *entities.Contact) (*entities.Contact, error) {
+
+	userDocID, err := primitive.ObjectIDFromHex(contact.UserID)
+	if err != nil {
+		return nil, fmt.Errorf(constants.DatabaseError, err)
+	}
+
+	contactDocID, err := primitive.ObjectIDFromHex(contact.ContactID)
+	if err != nil {
+		return nil, fmt.Errorf(constants.DatabaseError, err)
+	}
+
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 
 	regRes, regErr := r.collection.InsertOne(ctx, bson.M{
-		"user_id": contact.UserID,
-		"contact": contact.ContactID,
+		"user_id": userDocID,
+		"contact": contactDocID,
 	})
 	defer cancel()
 
@@ -58,7 +68,6 @@ func (r *ContactRepo) DeleteContact(userID, contactID string) error {
 	if err != nil {
 		return fmt.Errorf(constants.DatabaseError, err)
 	}
-
 	_, queryError := r.collection.DeleteOne(ctx, bson.M{"user_id": userDocID, "contact": contactDocID})
 
 	if queryError != nil {
@@ -125,12 +134,12 @@ func (r *ContactRepo) IsContact(userID, contactID string) (bool, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	var contact entities.Contact
+	res := r.collection.FindOne(ctx, bson.M{"user_id": userDocID, "contact": contactDocID})
 
-	queryError := r.collection.FindOne(ctx, bson.M{"user_id": userDocID, "contact": contactDocID}).Decode(&contact)
-
-	if queryError != nil {
-		return false, fmt.Errorf(constants.DatabaseError, queryError)
+	if res.Err() == mongo.ErrNoDocuments {
+		return false, nil
+	} else if res.Err() != nil {
+		return false, fmt.Errorf(constants.DatabaseError, res.Err())
 	}
 
 	return true, nil

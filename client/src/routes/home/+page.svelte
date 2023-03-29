@@ -54,9 +54,9 @@
 		}
 	});
 
-	onDestroy(() => {
-		closeWebSocketConnection();
-	});
+	// onDestroy(() => {
+	// 	closeWebSocketConnection();
+	// });
 
 	const logout = () => {
 		removeItemInLS('userDetails');
@@ -72,12 +72,19 @@
 			<Search userID={userID} />
 	{/if}
 </div>
-<div>
-	ChatList
+<h3>
+	<a class="main-link" href="/contacts">
+		Contacts
+	</a>
+</h3>
+<h3>
+	<a class="main-link" href="/messages">
+		Messages
+	</a>
 	<!-- {#key chatlist}
 		<Chatlist {chatlist} on:user-selected={(event) => (buddyUserID = event.detail)} />
 	{/key} -->
-</div>
+</h3>
 <div>
 	<!-- {#if buddyUserID}
 		{#key buddyUserID}

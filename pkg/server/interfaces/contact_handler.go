@@ -3,8 +3,8 @@ package interfaces
 import (
 	"fmt"
 	"net/http"
-	"project-eighteen/pkg/server/constants"
 	"project-eighteen/pkg/server/application"
+	"project-eighteen/pkg/server/constants"
 	"project-eighteen/pkg/server/domain/entities"
 	"project-eighteen/pkg/server/infrastructure/utils"
 
@@ -35,6 +35,21 @@ func (c *Contacts) AddContact(ctx *gin.Context) {
 	if validateErr != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"message": fmt.Sprintf(constants.Failed, validateErr),
+		})
+		return
+	}
+
+	alreadyExsist, err := c.contactApp.IsContact(contact.UserID, contact.ContactID)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"message": fmt.Sprintf(constants.Failed, err),
+		})
+		return
+	}
+
+	if alreadyExsist {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"message": fmt.Sprintf(constants.Failed, constants.ContactAlreadyExists),
 		})
 		return
 	}

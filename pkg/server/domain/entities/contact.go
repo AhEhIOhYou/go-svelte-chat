@@ -7,8 +7,8 @@ import (
 
 type Contact struct {
 	ID        string `json:"id" bson:"_id,omitempty"`
-	UserID    string `json:"userID"`
-	ContactID string `json:"contactUserID"`
+	UserID    string `json:"userID" bson:"user_id"`
+	ContactID string `json:"contactUserID" bson:"contact"`
 }
 
 type ContactRequest struct {

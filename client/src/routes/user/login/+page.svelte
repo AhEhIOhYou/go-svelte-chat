@@ -7,7 +7,7 @@
 		const userDetails = await loginHTTPRequest(username, password);
 
 		if (userDetails) {
-			setItemInLS('userDetails', { userID: userDetails.user.userId });
+			setItemInLS('userDetails', { userID: userDetails.user.id });
 			window.location.href = '/home';
 		} else {
 			new Error('Something went wrong');
