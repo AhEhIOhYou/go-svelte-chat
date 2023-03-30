@@ -1,21 +1,17 @@
 <script lang="ts">
-	import { onDestroy, onMount } from 'svelte';
+	import { onMount } from 'svelte';
 	import { getItemInLS, removeItemInLS } from '@/lib/services/storage-service';
-	import Chatlist from '@/lib/components/chatlist/Chatlist.svelte';
 	import { getUserByID } from '@/lib/services/api-service';
 	import {
 		closeWebSocketConnection,
 		connectToWebSocket,
 		listenToWebSocketMessages
 	} from '@/lib/services/ws-service';
-	import Conversation from '@/lib/components/conversation/Conversation.svelte';
 	import Search from '@/lib/components/search/Search.svelte';
+	import Contacts from '@/lib/components/contacts-list/Contacts.svelte';
 
 	let currentUserDetails;
 	let userID = '';
-	let buddyUserID;
-	let chatlist = [];
-	let newMessage = null;
 
 	onMount(async () => {
 		currentUserDetails = getItemInLS('userDetails');
@@ -54,10 +50,6 @@
 		}
 	});
 
-	// onDestroy(() => {
-	// 	closeWebSocketConnection();
-	// });
-
 	const logout = () => {
 		removeItemInLS('userDetails');
 		closeWebSocketConnection();
@@ -69,27 +61,12 @@
 <div>
 	Search
 	{#if userID != ''}
-			<Search userID={userID} />
+		<Search userID={userID} />
 	{/if}
 </div>
-<h3>
-	<a class="main-link" href="/contacts">
-		Contacts
-	</a>
-</h3>
-<h3>
-	<a class="main-link" href="/messages">
-		Messages
-	</a>
-	<!-- {#key chatlist}
-		<Chatlist {chatlist} on:user-selected={(event) => (buddyUserID = event.detail)} />
-	{/key} -->
-</h3>
-<div>
-	<!-- {#if buddyUserID}
-		{#key buddyUserID}
-			<Conversation currentUserID={currentUserDetails.userID} {buddyUserID} {newMessage} />
-		{/key} -->
-	<!-- {/if} -->
-</div>
+
+{#if userID != ''}
+	<Contacts userID={userID} />
+{/if}
+
 <button on:click={logout}> Logout </button>
