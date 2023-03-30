@@ -13,11 +13,13 @@ import (
 
 type Contacts struct {
 	contactApp application.ContactAppInterface
+	userApp    application.UserAppInterface
 }
 
-func NewContactsHandler(contactApp application.ContactAppInterface) *Contacts {
+func NewContactsHandler(contactApp application.ContactAppInterface, userApp application.UserAppInterface) *Contacts {
 	return &Contacts{
 		contactApp: contactApp,
+		userApp:    userApp,
 	}
 }
 
@@ -30,6 +32,16 @@ func (c *Contacts) AddContact(ctx *gin.Context) {
 		})
 		return
 	}
+
+	contactData, err := c.userApp.GetUserByID(contact.ContactID)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"message": fmt.Sprintf(constants.Failed, err),
+		})
+		return
+	}
+
+	contact.ContactUsername = contactData.Username
 
 	validateErr := contact.Validate()
 	if validateErr != nil {

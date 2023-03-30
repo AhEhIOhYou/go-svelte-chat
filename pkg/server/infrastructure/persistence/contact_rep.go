@@ -41,6 +41,7 @@ func (r *ContactRepo) CreateContact(contact *entities.Contact) (*entities.Contac
 	regRes, regErr := r.collection.InsertOne(ctx, bson.M{
 		"user_id": userDocID,
 		"contact": contactDocID,
+		"contact_username": contact.ContactUsername,
 	})
 	defer cancel()
 

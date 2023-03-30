@@ -12,13 +12,21 @@ type UserApp struct {
 var _ UserAppInterface = &UserApp{}
 
 type UserAppInterface interface {
+	// Create a new user in the database and return the user's ID
 	CreateUser(*entities.UserDetailsRequest) (string, error)
+	// Get a user by ID
 	GetUserByID(string) (*entities.User, error)
+	// Get a user by username
 	GetUserByUsername(string) (*entities.User, error)
+	// Get a user by username and password
 	GetUserByCredentials(string, string) (*entities.User, error)
+	// Search for users by username
 	SearchByUsername(string) ([]*entities.UserDetailsResponse, error)
+	// Update a user
 	UpdateUser(*entities.User) (*entities.User, error)
+	// Delete a user
 	DeleteUser(string) error
+	// Update a user's online status
 	UpdateUserOnlineStatus(string, int) error
 }
 

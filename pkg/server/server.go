@@ -22,7 +22,7 @@ func Start() {
 
 	users := interfaces.NewUsersHandler(services.UserRepository)
 	chat := interfaces.NewChatHandler(services.ChatRepository, services.MessageRepository)
-	contacts := interfaces.NewContactsHandler(services.ContactRepository)
+	contacts := interfaces.NewContactsHandler(services.ContactRepository, services.UserRepository)
 	messages := interfaces.NewMessageHandler(services.MessageRepository, services.ChatRepository)
 	index := interfaces.Ping
 

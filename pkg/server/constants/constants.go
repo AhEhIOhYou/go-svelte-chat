@@ -39,6 +39,7 @@ const (
 	//Contact errors
 	UserIDCantBeEmpty = "user id can't be empty"
 	ContactIDCantBeEmpty = "contact id can't be empty"
+	ContactUsernameCantBeEmpty = "contact username can't be empty"
 	ContactDoesNotExist = "contact does not exist"
 	ContactAlreadyExists = "contact already exists"
 
