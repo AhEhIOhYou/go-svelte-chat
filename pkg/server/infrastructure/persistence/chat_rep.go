@@ -25,14 +25,24 @@ func NewChatRepo(collection *mongo.Collection) *ChatRepo {
 
 func (r *ChatRepo) CreateChat(chat *entities.Chat) (*entities.Chat, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	participantsDocID := make([]primitive.ObjectID, len(chat.ParticipantsID))
+
+	for i, id := range chat.ParticipantsID {
+		participantDocID, err := primitive.ObjectIDFromHex(id)
+		if err != nil {
+			return nil, fmt.Errorf(constants.DatabaseError, err)
+		}
+		
+		participantsDocID[i] = participantDocID
+	}
 
 	createRes, regErr := r.collection.InsertOne(ctx, bson.M{
-		"participants": chat.ParticipantsID,
+		"participants": participantsDocID,
 		"type":         chat.Type,
 		"name":         chat.Name,
 	})
-
-	defer cancel()
 
 	_, regObjectErr := createRes.InsertedID.(primitive.ObjectID)
 

@@ -53,22 +53,10 @@ export function listenToWebSocketMessages(callback) {
 	wsConnection.onmessage = (event) => {
 		try {
 			const socketPayload = JSON.parse(event.data);
-			switch (socketPayload.Name) {
-				case 'user-update':
-					if (!socketPayload.Payload) {
-						return
-					}
-					callback(socketPayload.Payload);
-					break;
-				case 'message':
-					if (!socketPayload.Payload) {
-						return
-					}
-					callback(socketPayload.Payload);
-					break;
-				default:
-					break;
+			if (!socketPayload.payload) {
+				return
 			}
+			callback(socketPayload);
 		} catch (error) {
 			console.log(error)
 			console.warn('Something went wrong while decoding the Message Payload')

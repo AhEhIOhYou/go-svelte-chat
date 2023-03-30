@@ -9,31 +9,32 @@
 	} from '@/lib/services/ws-service';
 	import Search from '@/lib/components/search/Search.svelte';
 	import Contacts from '@/lib/components/contacts-list/Contacts.svelte';
+	import Conversation from '@/lib/components/conversation/Conversation.svelte';
 
-	let currentUserDetails;
-	let userID = '';
+	let user = null;
+	let chatID = '';
+	let newMessage = null;
 
 	onMount(async () => {
-		currentUserDetails = getItemInLS('userDetails');
-		userID = currentUserDetails.userID;
+		user = getItemInLS('userDetails');
 
-		if (!currentUserDetails) {
+		if (!user) {
 			window.location.href = '/user/login';
 		} else {
-			const isUserLoggedInResponse = await getUserByID(currentUserDetails.userID);
+			const isUserLoggedInResponse = await getUserByID(user.ID);
 			if (!isUserLoggedInResponse) {
 				window.location.href = '/user/login';
 			}
 		}
 
-		const wsConnection = connectToWebSocket(currentUserDetails.userID);
+		const wsConnection = connectToWebSocket(user.ID);
 		console.log(wsConnection);
 
 		if (wsConnection === null) {
 			throw new Error(wsConnection.message);
 		} else {
 			listenToWebSocketMessages(function (data) {
-				switch (data.type) {
+				switch (data.name) {
 					case 'connected':
 						console.log(data);
 						break;
@@ -41,14 +42,19 @@
 						console.log(data);
 						break;
 					case 'message':
-						console.log(data);
+						newMessage = data.payload;
 						break;
 					default:
+						console.log('default');
 						console.log(data);
 				}
 			});
 		}
 	});
+
+	const handleWriteMessage = (e) => {
+		chatID = e.detail;
+	};
 
 	const logout = () => {
 		removeItemInLS('userDetails');
@@ -58,15 +64,19 @@
 </script>
 
 <div class="title">Home</div>
+<button on:click={logout}> Logout </button>
 <div>
 	Search
-	{#if userID != ''}
-		<Search userID={userID} />
+	{#if user != null}
+		<Search userID={user.ID} />
 	{/if}
 </div>
 
-{#if userID != ''}
-	<Contacts userID={userID} />
+{#if user != null}
+	<Contacts userID={user.ID} on:writeMessage={(e) => handleWriteMessage(e)} />
 {/if}
-
-<button on:click={logout}> Logout </button>
+{#if user != null && chatID != ''}
+	{#key chatID}
+		<Conversation {user} {chatID} {newMessage} />
+	{/key}
+{/if}

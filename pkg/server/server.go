@@ -49,7 +49,8 @@ func Start() {
 	{
 		ch.POST("/create", chat.CreateChat)
 		ch.GET("/chats-by-user", chat.GetChatsByUser)
-		ch.GET("/chat-data", chat.GetChatData)
+		ch.GET("/:chat-id", chat.GetChatData)
+		ch.POST("/dialog", chat.GetDialog)
 	}
 
 	con := router.Group("api/contacts")

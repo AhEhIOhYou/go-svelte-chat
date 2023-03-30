@@ -27,6 +27,7 @@ const (
 	ChatMustHaveAtLeastTwoParticipants = "chat must have at least 2 participants"
 	ChatDoesNotExist = "chat does not exist"
 	ChatAlreadyExists = "chat already exists"
+	ParticipantsCountInvalid = "participants count invalid"
 
 	//Message errors
 	MessageCantBeEmpty = "message can't be empty"

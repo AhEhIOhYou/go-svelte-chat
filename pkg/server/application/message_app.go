@@ -12,11 +12,17 @@ type MessageApp struct {
 var _ MessageAppInterface = &MessageApp{}
 
 type MessageAppInterface interface {
+	// Store message in database and return it
 	StoreMessage(*entities.Message) (*entities.Message, error)
+	// Get messages by chat id. Limit and offset are used for pagination.
 	GetMessagesByChatID(string, int64, int64) ([]*entities.Message, error)
+	// Get message by id
 	GetMessageByID(string) (*entities.Message, error)
+	// Update message in database and return it
 	UpdateMessage(*entities.Message) (*entities.Message, error)
+	// Delete message by id
 	DeleteMessage(string) error
+	// Delete all messages by chat id
 	DeleteMessagesByChatID(string) error
 }
 

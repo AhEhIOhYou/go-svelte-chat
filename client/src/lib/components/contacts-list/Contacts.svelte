@@ -1,6 +1,9 @@
 <script lang="ts">
-	import { getContacts } from '@/lib/services/api-service';
+	import { getContacts, getDialog } from '@/lib/services/api-service';
+	import { createEventDispatcher } from 'svelte';
 	import { onMount } from 'svelte';
+
+	const dispatch = createEventDispatcher();
 
 	export let userID = null;
 	let contacts = [];
@@ -11,8 +14,9 @@
 		contacts = contactsRes.contacts;
 	});
 
-	function handleWriteMessage(e) {
-		console.log('write message');
+	async function handleWriteMessage(e) {
+		let dialogRes = await getDialog([userID, e.target.id]);
+		dispatch('writeMessage', dialogRes.chat.id);
 	}
 </script>
 
@@ -28,7 +32,7 @@
 				<div class="contact">
 					<div class="name">{contact.contactUsername}</div>
 					<!-- svelte-ignore a11y-click-events-have-key-events -->
-					<div class="new-message" on:click={(e) => handleWriteMessage(e)}>message</div>
+					<div id={contact.contactUserID} class="new-message" on:click={(e) => handleWriteMessage(e)}>message</div>
 				</div>
 			{/each}
 		{/if}

@@ -49,12 +49,39 @@ export async function getUserByID(userID) {
 }
 
 
-export async function getConversationBetweenUsers(toUserID, fromUserID) {
-	const response = await fetch(`${API_ENDPOINTS}/chat/${fromUserID}/${toUserID}`, {
+export async function getChatData(chatID) {
+	const response = await fetch(`${API_ENDPOINTS}/chats/${chatID}`, {
 		method: 'GET',
 		headers: {
 			'Content-Type': 'application/json'
 		}
+	});
+	return await response.json();
+}
+
+export async function getDialog(participantsID) {
+	const response = await fetch(`${API_ENDPOINTS}/chats/dialog`, {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json'
+		},
+		body: JSON.stringify({
+			"participantsID": participantsID
+		})
+	});
+	return await response.json();
+}
+
+export async function createChat(participantsID, name) {
+	const response = await fetch(`${API_ENDPOINTS}/chats/create`, {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json'
+		},
+		body: JSON.stringify({
+			"participantsIDs": participantsID,
+			"name": name
+		})
 	});
 	return await response.json();
 }

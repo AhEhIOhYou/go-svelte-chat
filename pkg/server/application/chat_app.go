@@ -12,13 +12,24 @@ type ChatApp struct {
 var _ ChatAppInterface = &ChatApp{}
 
 type ChatAppInterface interface {
+	/*
+		Created chat with participants and return chat entity. If chat already exist, return chat entity.
+		If two practitioners in chat, create with type ChatTypeDialog else ChatTypeGroup.
+	*/
 	CreateChat(*entities.Chat) (*entities.Chat, error)
+	// Check exist dialog with participants and return it if exist.
 	CheckExsistDialog([]string) (*entities.Chat, error)
+	// Return chat by id.
 	GetChatByID(string) (*entities.Chat, error)
+	// Return all chats with user id.
 	GetChatsByParticipantID(string) ([]*entities.Chat, error)
+	// Update chat.
 	UpdateChat(*entities.Chat) (*entities.Chat, error)
+	// Add participant to group chat.
 	AddParticipantToChat(string, string) error
+	// Delete participant from group chat.
 	DeleteParticipantFromChat(string, string) error
+	// Delete chat.
 	DeleteChat(string) error
 }
 

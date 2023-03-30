@@ -1,95 +1,128 @@
 <script lang="ts">
-	import { getConversationBetweenUsers } from '@/lib/services/api-service';
+	import { getChatData } from '@/lib/services/api-service';
 	import { sendWebSocketMessage } from '@/lib/services/ws-service';
 	import { onMount, afterUpdate, beforeUpdate } from 'svelte';
-	
-	export let currentUserID;
-	export let buddyUserID;
+
+	export let user = null;
+	export let chatID = null;
 	export let newMessage = null;
+
 	let div;
 	let autoscroll;
 	let conversation = null;
 	let messages = [];
 
-	async function getConversation(to, from: string) {
-		const res = await getConversationBetweenUsers(to, from);
-		return res;
-	}
-
 	onMount(async () => {
-		div.scrollTo(0, div.scrollHeight);
-		conversation = await getConversation(currentUserID, buddyUserID);
+		if (!chatID) return;
+		conversation = await getChatData(chatID);
+		console.log(conversation);
+		
 		messages = conversation.messages;
+		div.scrollTo(0, div.scrollHeight);
 	});
 
 	beforeUpdate(() => {
+		if (!chatID) return;
 		autoscroll = div && div.offsetHeight + div.scrollTop > div.scrollHeight - 20;
 	});
 
-	afterUpdate(() =>	 {
+	afterUpdate(() => {
+		if (!chatID) return;
 		if (autoscroll) div.scrollTo(0, div.scrollHeight);
 	});
 
-	$: if (newMessage) {
-		if (conversation) messages = messages.concat(newMessage);
-		newMessage = null;
+	function handleKeydown(e) {
+		if (e.key === 'Enter' && e.target.value !== '') {
+			const payload = {
+				chatID: chatID,
+				fromUserID: user.ID,
+				fromUserName: user.Name,
+				message: e.target.value,
+				createdAt: new Date().toISOString()
+			};
+			sendWebSocketMessage(payload);
+			messages === null ? (messages = [payload]) : (messages = [...messages, payload]);
+			e.target.value = '';
+		}
 	}
 
-	function handleKeydown(event) {
-		if (event.key === 'Enter') {
-			const text = event.target.value;
-			if (!text) return;
-
-			const payload = {
-				fromUserID: conversation.details.toId,
-				toUserID: conversation.details.fromId,
-				message: text
-			};
-
-			messages = messages.concat(payload);
-			sendWebSocketMessage(payload);
-			event.target.value = '';
-		}
+	$: if (newMessage && newMessage.chatID === chatID) {
+		messages === null ? (messages = [newMessage]) : (messages = [...messages, newMessage]);
+		newMessage = null;
 	}
 </script>
 
-{#await conversation}
-	<div>Loading...</div>
-{:then conversation}
-	<div class="conv">
+<div class="conv">
+	<div class="chat-title">Chat Title</div>
+	{#if !chatID}
+		<div class="chat-title">Choose a contact to start a conversation</div>
+	{:else}
 		<div class="chat-scrollable" bind:this={div}>
-			{#each messages as message}
-				<div class="message">
+			{#if !messages}
+				<div class="be-first">No messages</div>
+			{:else}
+				{#each messages as message}
 					<div class="message__outer">
 						<div class="message__name">
-							<span
-								>{message.fromUserID == conversation.details.toId
-									? 'me'
-									: conversation.details.fromName}</span
-							>
+							{message.fromUserName}
 						</div>
-						<div
-							class="message__inner {message.fromUserID == conversation.details.toId
-								? 'me'
-								: 'buddy'} "
-						>
-							<div class="message__bubble">{message.message}</div>
-							<div class="message__spacer" />
+						<div class="message__inner {message.fromUserID === user.ID ? 'me' : 'buddy'}">
+							<div class="message__bubble">
+								{message.message}
+							</div>
 						</div>
 					</div>
-				</div>
-			{/each}
+				{/each}
+			{/if}
 		</div>
-		<div class="input">
-			<input on:keydown={handleKeydown} />
+		<div class="chat-input">
+			<input on:keydown={(e) => handleKeydown(e)} />
 		</div>
-	</div>
-{/await}
+	{/if}
+</div>
 
 <style lang="scss">
+	.conv {
+		display: flex;
+		flex-direction: column;
+		height: 100%;
+		width: 100%;
+
+		.chat-title {
+			font-size: 1.5rem;
+			font-weight: 600;
+			padding: 1rem;
+		}
+
+		.chat-input {
+			padding: 1rem;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+
+			input {
+				width: 100%;
+				height: 40px;
+				border: 1px solid #ccc;
+				border-radius: 4px;
+				padding: 0.5rem;
+				font-size: 1rem;
+			}
+		}
+	}
+
 	.chat-scrollable {
 		height: 300px;
 		overflow-y: auto;
+
+		.be-first {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			height: 100%;
+			font-size: 1.2rem;
+			font-weight: 600;
+		}
 
 		.message__outer {
 			display: flex;

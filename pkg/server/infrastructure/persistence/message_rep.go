@@ -28,17 +28,21 @@ func NewMessageRepo(collection *mongo.Collection) *MessageRepo {
 
 func (r *MessageRepo) StoreMessage(message *entities.Message) (*entities.Message, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	chatDocID, chatErr := primitive.ObjectIDFromHex(message.ChatID)
+	fromDocID, fromErr := primitive.ObjectIDFromHex(message.FromID)
+	if chatErr != nil || fromErr != nil {
+		return nil, fmt.Errorf(constants.DatabaseError, chatErr)
+	}
 
 	createRes, regErr := r.collection.InsertOne(ctx, bson.M{
-		"chat_id":    message.ChatID,
-		"chat_name":  message.ChatName,
-		"from_id":    message.FromID,
+		"chat_id":    chatDocID,
+		"from_id":    fromDocID,
 		"from_name":  message.FromName,
 		"message":    message.Message,
 		"created_at": message.CreatedAt,
 	})
-
-	defer cancel()
 
 	_, regObjectErr := createRes.InsertedID.(primitive.ObjectID)
 

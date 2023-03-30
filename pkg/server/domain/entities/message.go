@@ -7,18 +7,11 @@ import (
 
 type Message struct {
 	ID        string `json:"id" bson:"_id,omitempty"`
-	ChatID    string `json:"chatID"`
-	ChatName  string `json:"chatName"`
-	FromID    string `json:"fromUserID"`
-	FromName  string `json:"fromUserName"`
-	Message   string `json:"message"`
-	CreatedAt string `json:"createdAt"`
-}
-
-type MessageRequest struct {
-	ChatID  string `json:"chatID"`
-	From    string `json:"fromUserID"`
-	Message string `json:"message"`
+	ChatID    string `json:"chatID" bson:"chat_id,omitempty"`
+	FromID    string `json:"fromUserID" bson:"from_id,omitempty"`
+	FromName  string `json:"fromUserName" bson:"from_name,omitempty"`
+	Message   string `json:"message" bson:"message,omitempty"`
+	CreatedAt string `json:"createdAt" bson:"created_at,omitempty"`
 }
 
 func (message *Message) Validate() error {
