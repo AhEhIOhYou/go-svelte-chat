@@ -75,7 +75,7 @@ func (c *Chat) CreateChat(ctx *gin.Context) {
 }
 
 func (c *Chat) GetChatsByUser(ctx *gin.Context) {
-	userID := ctx.Param("userID")
+	userID := ctx.Query("user-id")
 	if !utils.CheckAlphaNumeric(userID) {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"message": constants.UserIDInvalid,

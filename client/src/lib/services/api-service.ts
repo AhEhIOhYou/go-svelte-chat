@@ -133,3 +133,13 @@ export async function getContacts(userID) {
 	});
 	return await response.json();
 }
+
+export async function getChatsByUser(userID) {
+	const response = await fetch(`${API_ENDPOINTS}/chats/list?user-id=${userID}`, {
+		method: 'GET',
+		headers: {
+			'Content-Type': 'application/json'
+		}
+	});
+	return await response.json();
+}

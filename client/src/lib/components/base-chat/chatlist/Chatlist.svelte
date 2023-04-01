@@ -1,30 +1,35 @@
 <script lang="ts">
+	import { getChatsByUser } from '@/lib/services/api-service';
 	import { createEventDispatcher } from 'svelte';
+	import { onMount } from 'svelte';
 
 	const dispatch = createEventDispatcher();
 
-	export let chatlist = [];
+	export let user = null;
 
-	function handleClick(event) {
-		const userId = event.target.id;
-		dispatch('user-selected', userId);
+	let chatslist = [];
+
+	onMount(async () => {
+		let chatsRes = await getChatsByUser(user.ID);
+		chatslist = chatsRes.chats;
+	});
+
+	function handleClick(e) {
+		dispatch('chat-selected', {
+			ID: e.target.id
+		});
 	}
 </script>
 
 <div class="chatlist-container">
 	<div class="chatlist">
-		{#if chatlist.length === 0}
-			<div class="chat__item">No chats</div>
+		{#if !chatslist}
+			<div>No Chats</div>
 		{:else}
-			{#each chatlist as user}
+			{#each chatslist as chat}
 				<!-- svelte-ignore a11y-click-events-have-key-events -->
-				<div id={user.userId} class="chat__item" on:click={handleClick}>
-					{user.username}
-					{#if user.online === 'Y'}
-						<div class="online" />
-					{:else}
-						<div class="offline" />
-					{/if}
+				<div class="chat__item" id={chat.id} on:click={(e) => handleClick(e)}>
+					{chat.name}
 				</div>
 			{/each}
 		{/if}
@@ -36,7 +41,6 @@
 		display: flex;
 		flex-direction: column;
 		justify-content: center;
-		align-items: center;
 		height: 100%;
 		width: 100%;
 
@@ -56,22 +60,6 @@
 				height: 50px;
 				width: 100%;
 				border-bottom: 1px solid #ccc;
-			}
-
-			.online {
-				height: 10px;
-				width: 10px;
-				background-color: green;
-				border-radius: 50%;
-				margin-left: 10px;
-			}
-
-			.offline {
-				height: 10px;
-				width: 10px;
-				background-color: red;
-				border-radius: 50%;
-				margin-left: 10px;
 			}
 		}
 	}

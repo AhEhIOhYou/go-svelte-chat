@@ -15,8 +15,7 @@
 	onMount(async () => {
 		if (!chatID) return;
 		conversation = await getChatData(chatID);
-		console.log(conversation);
-		
+
 		messages = conversation.messages;
 		div.scrollTo(0, div.scrollHeight);
 	});
@@ -53,7 +52,6 @@
 </script>
 
 <div class="conv">
-	<div class="chat-title">Chat Title</div>
 	{#if !chatID}
 		<div class="chat-title">Choose a contact to start a conversation</div>
 	{:else}
@@ -87,12 +85,6 @@
 		flex-direction: column;
 		height: 100%;
 		width: 100%;
-
-		.chat-title {
-			font-size: 1.5rem;
-			font-weight: 600;
-			padding: 1rem;
-		}
 
 		.chat-input {
 			padding: 1rem;

@@ -21,7 +21,6 @@
 </script>
 
 <div class="contacts">
-	<div class="title">Contacts</div>
 	<div class="list">
 		{#if !contacts}
 			<div class="contact">
@@ -45,12 +44,6 @@
 		flex-direction: column;
 		height: 100%;
 		width: 100%;
-
-		.title {
-			font-size: 1.5rem;
-			font-weight: 600;
-			padding: 1rem;
-		}
 
 		.list {
 			flex: 1;

@@ -2,27 +2,21 @@
 	import { addToContacts, deleteContact, searchUserByUserName } from '@/lib/services/api-service';
 
 	export let userID: string;
-	console.log(userID);
 
 	let searchTerm = '';
 	let results = [];
 
 	const handleSearch = async () => {
 		const dataResponse = await searchUserByUserName(searchTerm);
-		console.log(dataResponse);
 		results = dataResponse.users ?? [];
 	};
 
 	const handleAddContact = async (e) => {
-		console.log(userID, e.target.id);
-		
 		const dataResponse = await addToContacts(userID, e.target.id);
-		console.log(dataResponse);
 	};
 
 	const handleDeleteContact = async (e) => {
 		const dataResponse = await deleteContact(userID, e.target.id);
-		console.log(dataResponse);
 	};
 </script>
 
