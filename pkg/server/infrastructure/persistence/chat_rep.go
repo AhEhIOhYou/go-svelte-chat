@@ -38,6 +38,12 @@ func (r *ChatRepo) CreateChat(chat *entities.Chat) (*entities.Chat, error) {
 		participantsDocID[i] = participantDocID
 	}
 
+	if len(participantsDocID) > 2 {
+		chat.Type = constants.ChatTypeGroup
+	} else {
+		chat.Type = constants.ChatTypeDialog
+	}
+
 	createRes, regErr := r.collection.InsertOne(ctx, bson.M{
 		"participants": participantsDocID,
 		"type":         chat.Type,

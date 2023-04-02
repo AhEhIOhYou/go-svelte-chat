@@ -75,6 +75,8 @@ func handleSocketPayloadEvents(c *ClientType, socketEvent entities.SocketEventTy
 		userDisconnect(c, socketEvent)
 	case "message":
 		messageStore(c, socketEvent)
+	case "new-chat":
+		notifyNewChat(c, socketEvent)
 	}
 }
 
@@ -200,17 +202,13 @@ func BroadcastToContacts(hub *HubType, payload entities.SocketEventType, userID 
 	}
 }
 
-func BroadcastToChat(hub *HubType, authorID string, payload entities.SocketEventType, chatID string) {
+func BroadcastToChat(hub *HubType, payload entities.SocketEventType, chatID string) {
 	chat, err := hub.chatApp.GetChatByID(chatID)
 	if err != nil {
 		return
 	}
 
 	for _, userID := range chat.ParticipantsID {
-		//exclude sender
-		if userID == authorID {
-			continue
-		}
 		SendToClient(hub, payload, userID)
 	}
 }

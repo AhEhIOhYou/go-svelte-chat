@@ -6,6 +6,8 @@
 	import Contacts from '@/lib/components/base-chat/contacts-list/Contacts.svelte';
 	import Conversation from '@/lib/components/base-chat/conversation/Conversation.svelte';
 	import Chatlist from '@/lib/components/base-chat/chatlist/Chatlist.svelte';
+	import Modal from './modal/Modal.svelte';
+	import CreateConversation from './conversation/CreateConversation.svelte';
 
 	let chatID = '';
 	let newMessage = null;
@@ -32,6 +34,8 @@
 					case 'message':
 						newMessage = data.payload;
 						break;
+					case 'new-chat':
+
 					default:
 						console.log('default');
 						console.log(data);
@@ -54,6 +58,10 @@
 
 	const handleChatSelected = (e) => {
 		chatID = e.detail.ID;
+	};
+
+	const handleCreateChat = (e) => {
+		showModal = false;
 	};
 
 	const logout = () => {
@@ -82,6 +90,8 @@
 			currentAccordion.classList.remove('collapsing');
 		}
 	};
+
+	let showModal = false;
 </script>
 
 <div class="base-container">
@@ -121,6 +131,17 @@
 			</div>
 		</div>
 	</div>
+
+	<button on:click={() => (showModal = true)}>Create group chat</button>
+	<Modal bind:showModal>
+		<h2 slot="header">Create big chat</h2>
+
+		<div slot="body">
+			<CreateConversation userID={user.ID} on:create-chat={(e) => handleCreateChat(e)} />
+		</div>
+
+		<a href="https://www.merriam-webster.com/dictionary/modal">merriam-webster.com</a>
+	</Modal>
 </div>
 
 <style lang="scss">

@@ -18,9 +18,9 @@
 	let websocketConnection = getWsCon();
 </script>
 
-<div class="title">Home</div>
 {#await websocketConnection}
-	<div>Laoding...</div>
+	<div>Loading...</div>
 {:then websocketConnection}
+	<div class="title">Hello, {user.Name}</div>
 	<BaseChat {user} {websocketConnection} />
 {/await}

@@ -33,6 +33,18 @@ export function sendWebSocketMessage(messagePayload) {
 	);
 }
 
+export function sendWebSocketEvent(name, payload) {
+	if (wsConnection === null) {
+		return;
+	}
+	wsConnection.send(
+		JSON.stringify({
+			Name: name,
+			Payload: payload
+		})
+	);
+}
+
 export function closeWebSocketConnection() {
 	if (wsConnection === null) {
 		return;

@@ -39,7 +39,7 @@ func userOnline(c *ClientType, socketEvent entities.SocketEventType) {
 func userDisconnect(c *ClientType, socketEvent entities.SocketEventType) {
 	userID := socketEvent.Payload.(string)
 	userDetails, err := c.hub.userApp.GetUserByID(userID)
-	
+
 	if (userDetails == &entities.User{} || err != nil) {
 		log.Println("Invalid user with id: ", userID, " tried to disconnect")
 	} else {
@@ -91,11 +91,43 @@ func messageStore(c *ClientType, socketEvent entities.SocketEventType) {
 
 		// 2. Создать событие о том, что пользователь отправил сообщение
 		messageEvent := entities.SocketEventType{
-			Name: "message",
+			Name:    "message",
 			Payload: message,
 		}
 
 		// 3. Отправить событие о том, что пользователь отправил сообщение всем участникам чата
-		BroadcastToChat(c.hub,authorID, messageEvent, message.ChatID)
+		BroadcastToChat(c.hub, messageEvent, message.ChatID)
 	}
+}
+
+func notifyNewChat(c *ClientType, socketEvent entities.SocketEventType) {
+	// 0. Преобразовать событие в сообщение
+	chatRaw := socketEvent.Payload.(map[string]interface{})
+	var participants []string
+
+	for _,item:= range chatRaw["participants"].([]interface{}) {
+		participants = append(participants, item.(string))
+	}
+
+	chat := entities.Chat{
+		ParticipantsID: participants,
+		Name:           chatRaw["name"].(string),
+	}
+
+	// 1. Сохранить чат в БД
+	newChat, err := c.hub.chatApp.CreateChat(&chat)
+	if err != nil {
+		log.Println("Failed to create chat: ", err)
+		return
+	}
+	log.Println("New chat created")
+
+	// 2. Создать событие о том, что пользователь создал чат
+	chatEvent := entities.SocketEventType{
+		Name:    "new-chat",
+		Payload: newChat,
+	}
+
+	// 3. Отправить событие о том, что пользователь создал чат всем участникам чата
+	BroadcastToChat(c.hub, chatEvent, newChat.ID)
 }

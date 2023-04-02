@@ -39,6 +39,8 @@ func (u *Users) Register(ctx *gin.Context) {
 		return
 	}
 
+	user.Password, _ = security.Hash(user.Password)
+
 	userObjID, regErr := u.userApp.CreateUser(&user)
 	if regErr != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
@@ -98,7 +100,7 @@ func (u *Users) Login(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{
 		"message": constants.Successful,
 		"user": &entities.UserDetailsResponse{
-			ID:   userDetails.ID,
+			ID:       userDetails.ID,
 			Username: userDetails.Username,
 			Online:   userDetails.Online,
 		},

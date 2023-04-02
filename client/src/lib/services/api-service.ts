@@ -79,7 +79,7 @@ export async function createChat(participantsID, name) {
 			'Content-Type': 'application/json'
 		},
 		body: JSON.stringify({
-			"participantsIDs": participantsID,
+			"participants": participantsID,
 			"name": name
 		})
 	});
