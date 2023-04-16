@@ -28,6 +28,6 @@
 
 Backend представлен REST API на Golang с фреймворком Gin, база данных - MongoDB, для обмена сообщениями применяется websocket. Структура приложения следует паттерну Domen Drive Design.
 
-Frontend написан на SvelteKit с использованием SCSS.
+Frontend написан на Svelte с использованием SCSS.
 
 https://user-images.githubusercontent.com/62998783/232338911-a042d26f-f0ca-4bbb-b4e9-98f3ae772abd.mp4
