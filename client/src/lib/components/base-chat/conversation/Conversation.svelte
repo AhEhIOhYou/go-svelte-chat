@@ -40,7 +40,6 @@
 				createdAt: new Date().toISOString()
 			};
 			sendWebSocketMessage(payload);
-			messages === null ? (messages = [payload]) : (messages = [...messages, payload]);
 			e.target.value = '';
 		}
 	}
